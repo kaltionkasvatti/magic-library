@@ -1,4 +1,12 @@
 <title>Etusivu</title>
 
 <h1>Etusivu</h1>
-<b>Tervetuloa</b> <i>sovellukseen</i>!
+Tervetuloa käyttämään MTG-kirjastoa!
+
+Korttien määrä: {{count}}
+<hr>
+{% for card in cards%}
+{{card.name}}
+<hr>
+{% endfor %}
+
