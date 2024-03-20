@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import render_template
+from flask import render_template, redirect, request
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
 
@@ -12,3 +12,15 @@ def index():
     result = db.session.execute(text("SELECT name FROM cards"))
     cards = result.fetchall()
     return render_template("index.html", count=len(cards), cards=cards)
+
+@app.route("/newcard")
+def newcard():
+    return render_template("newcard.html")
+
+@app.route("/cardsend")
+def cardsend():
+    name = request.form["cardname"]
+    sql= "INSERT INTO cards (name) VALUES (:cardname)"
+    db.session.execute(sql, {"cardname":cardname})
+    db.session.commit()
+    return redirect("/")
