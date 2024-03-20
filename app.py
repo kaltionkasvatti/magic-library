@@ -17,10 +17,10 @@ def index():
 def newcard():
     return render_template("newcard.html")
 
-@app.route("/cardsend")
+@app.route("/cardsend", methods=["POST"])
 def cardsend():
-    name = request.form["cardname"]
+    cardname = request.form["cardname"]
     sql= "INSERT INTO cards (name) VALUES (:cardname)"
-    db.session.execute(sql, {"cardname":cardname})
+    db.session.execute(text(sql), {"cardname":cardname})
     db.session.commit()
     return redirect("/")
