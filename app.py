@@ -14,9 +14,12 @@ db = SQLAlchemy(app)
 
 @app.route("/")
 def index():
-    result = db.session.execute(text("SELECT name FROM cards"))
-    cards = result.fetchall()
-    return render_template("index.html", count=len(cards), cards=cards)
+    if session:
+        result = db.session.execute(text("SELECT C.name FROM cards C, users U WHERE C.userid=U.id AND U.username=:username"), {"username":session["username"]})
+        cards = result.fetchall()
+        return render_template("index.html", count=len(cards), cards=cards)
+    else:
+        return render_template("index.html")
 
 @app.route("/newcard")
 def newcard():
