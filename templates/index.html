@@ -9,17 +9,31 @@ Korttien määrä: {{count}}
 {{card.name}}
 <hr>
 {% endfor %}
-
-<a href="/newcard">Lisää kortti</a>
-<br>
-<a href="/logout">Kirjaudu ulos</a>
+<p>
+    <a href="/newcard">Lisää kortti</a>
+</p>
+<p>
+    <a href="/logout">Kirjaudu ulos</a>
+</p>
 
 {% else %}
+<h3>Kirjaudu:</h3>
 <form action="/login" method="POST">
-<p>Tunnus:<br>
-<input type="text" name="username"></p>
-<p>Salasana:<br>
-<input type="password" name="password"></p>
-<input type="submit" value="Kirjaudu">
+    <p>Tunnus:<br>
+        <input type="text" name="username"></p>
+    <p>Salasana:<br>
+    <input type="password" name="password"></p>
+    <input type="submit" value="Kirjaudu">
 </form>
+
+<h3>Luo tunnus:</h3>
+<p>
+    <form action="/signin" method="POST">
+        <p>Tunnus:<br>
+        <input type="text" name="username"></p>
+        <p>Salasana:<br>
+        <input type="password" name="password"></p>
+        <input type="submit" value="Luo tunnus">
+    </form>
+</p>
 {% endif %}
