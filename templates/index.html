@@ -2,38 +2,45 @@
 
 <h1>Etusivu</h1>
 Tervetuloa käyttämään MTG-kirjastoa!
+<hr>
 {% if session.username %}
-Korttien määrä: {{count}}
-<hr>
-{% for card in cards%}
-{{card.name}}
-<hr>
-{% endfor %}
-<p>
-    <a href="/newcard">Lisää kortti</a>
-</p>
-<p>
-    <a href="/logout">Kirjaudu ulos</a>
-</p>
+    <h3>Kansioita: {{number}}</h3>
+    <hr>
+    {%for folder in folders%}
+        {{folder[0]}}
+        <hr>
+    {%endfor%}
+    <h3>Kortit ilman kansiota: {{count}}</h3>
+    <hr>
+    {% for card in cards%} 
+        {{card.name}}
+        <hr>
+    {% endfor %}
+    <p>
+        <a href="/newcard">Lisää kortti</a>
+    </p>
+    <p>
+        <a href="/logout">Kirjaudu ulos</a>
+    </p>
 
 {% else %}
-<h3>Kirjaudu:</h3>
-<form action="/login" method="POST">
-    <p>Tunnus:<br>
-        <input type="text" name="username"></p>
-    <p>Salasana:<br>
-    <input type="password" name="password"></p>
-    <input type="submit" value="Kirjaudu">
-</form>
-
-<h3>Luo tunnus:</h3>
-<p>
-    <form action="/signin" method="POST">
+    <h3>Kirjaudu:</h3>
+    <form action="/login" method="POST">
         <p>Tunnus:<br>
-        <input type="text" name="username"></p>
+            <input type="text" name="username"></p>
         <p>Salasana:<br>
         <input type="password" name="password"></p>
-        <input type="submit" value="Luo tunnus">
+        <input type="submit" value="Kirjaudu">
     </form>
-</p>
+    <br>
+    <h3>Luo tunnus:</h3>
+    <p>
+        <form action="/signin" method="POST">
+            <p>Tunnus:<br>
+            <input type="text" name="username"></p>
+            <p>Salasana:<br>
+            <input type="password" name="password"></p>
+            <input type="submit" value="Luo tunnus">
+        </form>
+    </p>
 {% endif %}
