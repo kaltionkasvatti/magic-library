@@ -17,7 +17,7 @@ def index():
     if session:
         finds = db.session.execute(text("SELECT DISTINCT C.library FROM cards C, users U WHERE C.userid=U.id AND U.username=:username AND C.library IS NOT NULL"), {"username":session["username"]})
         folders = finds.fetchall()
-        result = db.session.execute(text("SELECT C.name FROM cards C, users U WHERE C.userid=U.id AND U.username=:username AND C.library IS NULL"), {"username":session["username"]})
+        result = db.session.execute(text("SELECT C.name, C.id FROM cards C, users U WHERE C.userid=U.id AND U.username=:username AND C.library IS NULL"), {"username":session["username"]})
         cards = result.fetchall()
         return render_template("index.html", count=len(cards), cards=cards, folders=folders, number=len(folders))
     else:
@@ -70,3 +70,10 @@ def logout():
 @app.route("/ohno")
 def ohno():
     return render_template("ohno.html")
+
+@app.route("/cardedit", methods=["GET"])
+def cardedit():
+    card = request.args["card"]
+    sql = "SELECT name, twofaced, colour, cmc, set, rarity, power, toughness, library FROM cards WHERE id=:card"
+    result = db.session.execute(text(sql), {"card":card}).fetchone()
+    return render_template("cardedit.html", name=result[0], twofaced=result[1], colour=result[2], cmc=result[3], set=result[4], rarity=result[5], power=result[6], toughness=result[7], library=result[8])

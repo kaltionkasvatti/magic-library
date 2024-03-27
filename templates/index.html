@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <title>Etusivu</title>
 
 <h1>Etusivu</h1>
@@ -7,13 +8,14 @@ Tervetuloa käyttämään MTG-kirjastoa!
     <h3>Kansioita: {{number}}</h3>
     <hr>
     {%for folder in folders%}
-        {{folder[0]}}
+        {{folder[0]}}       
         <hr>
     {%endfor%}
     <h3>Kortit ilman kansiota: {{count}}</h3>
     <hr>
     {% for card in cards%} 
-        {{card.name}}
+        {{card.name}}       
+        <form action="/cardedit" method="GET"> <input type="hidden" name="card" value="{{card.id}}"> <input type="submit" value="Muokkaa"> </form>
         <hr>
     {% endfor %}
     <p>
