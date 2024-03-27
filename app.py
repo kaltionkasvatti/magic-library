@@ -76,4 +76,4 @@ def cardedit():
     card = request.args["card"]
     sql = "SELECT name, twofaced, colour, cmc, set, rarity, power, toughness, library FROM cards WHERE id=:card"
     result = db.session.execute(text(sql), {"card":card}).fetchone()
-    return render_template("cardedit.html", name=result[0], twofaced=result[1], colour=result[2], cmc=result[3], set=result[4], rarity=result[5], power=result[6], toughness=result[7], library=result[8])
+    return render_template("cardedit.html", name=result[0], twofaced=result[1], colour=result[2], cmc=result[3], set=result[4], rarity=result[5], power=result[6], toughness=result[7], library=result[8], id=card) 
