@@ -37,3 +37,9 @@ CREATE TABLE backside (
     power TEXT,
     toughness TEXT
 );
+
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    username TEXT,
+    password TEXT
+);

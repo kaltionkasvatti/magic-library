@@ -9,15 +9,18 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
 app.secret_key = getenv("SECRET_KEY")
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql+psycopg2:///hannolan"
+data = getenv("DATABASE_URL")
+app.config["SQLALCHEMY_DATABASE_URI"] = data
 db = SQLAlchemy(app)
 
 @app.route("/")
 def index():
     if session:
-        finds = db.session.execute(text("SELECT DISTINCT C.library FROM cards C, users U WHERE C.userid=U.id AND U.username=:username AND C.library IS NOT NULL"), {"username":session["username"]})
+        finds = db.session.execute(text("SELECT DISTINCT L.name FROM users U, libraries L WHERE L.userid=U.id AND U.username=:username"), {"username":session["username"]})
         folders = finds.fetchall()
-        result = db.session.execute(text("SELECT C.name, C.id FROM cards C, users U WHERE C.userid=U.id AND U.username=:username AND C.library IS NULL"), {"username":session["username"]})
+        result = db.session.execute(text("""
+            SELECT C.name, C.id FROM cards C, users U , cardlib D 
+            WHERE C.userid=U.id  AND C.id=D.card AND D.visible=True AND U.username=:username"""), {"username":session["username"]})
         cards = result.fetchall()
         return render_template("index.html", count=len(cards), cards=cards, folders=folders, number=len(folders))
     else:
