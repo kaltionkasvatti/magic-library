@@ -28,7 +28,8 @@ def index():
 
 @app.route("/newcard")
 def newcard():
-    return render_template("newcard.html")
+    libs = db.session.execute(text("SELECT L.name, L.id FROM libraries L, users U WHERE L.userid=U.id AND U.username = :username"), {"username":session["username"]}).fetchall()
+    return render_template("newcard.html", libs=libs )
 
 @app.route("/signin", methods=["POST"])
 def signin():
@@ -77,6 +78,10 @@ def ohno():
 @app.route("/cardedit", methods=["GET"])
 def cardedit():
     card = request.args["card"]
-    sql = "SELECT name, twofaced, colour, cmc, set, rarity, power, toughness, library FROM cards WHERE id=:card"
+    sql = "SELECT name, twofaced, colour, cmc, rarity, power, toughness FROM cards WHERE id=:card"
     result = db.session.execute(text(sql), {"card":card}).fetchone()
-    return render_template("cardedit.html", name=result[0], twofaced=result[1], colour=result[2], cmc=result[3], set=result[4], rarity=result[5], power=result[6], toughness=result[7], library=result[8], id=card) 
+    sql = "SELECT name FROM libraries" 
+    libs = db.session.execute(text(sql)).fetchall()
+    sql = "SELECT library FROM cardlib WHERE card=:card"
+    connected = db.session.execute(text(sql), {"card":card}).fetchall()
+    return render_template("cardedit.html", id=card, result=result, libs=libs, connected=connected) 
