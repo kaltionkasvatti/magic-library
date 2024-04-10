@@ -3,7 +3,7 @@
     Kortin nimi: <br>
     <textarea name="cardname" rows="1" cols="50"></textarea>
     <br>
-        <input type="checkbox" name="twofaced" value="yes">
+        <input type="checkbox" name="twofaced" value="True">
         <label for ="twofaced"> Kaksipuolinen</label>
     <br>
         <b>Värit (kaikki):</b>
@@ -21,10 +21,7 @@
     <br>
         Mana value (x on 0):    <input type="number" name="cmc" min="0" max="100">
     <br>
-    Setti:
-    <br>
-    <textarea name="set" rows="1" cols="50"></textarea>
-    <br>
+   
     Harvinaisuus:
     <select name="rarity">
         <option value="common" selected> Common
@@ -41,6 +38,7 @@
         <input type="checkbox" name="{{folder[0]}}" value="{{folder[1]}}">
         <label for="{{folder[0]}}">{{folder[0]}}</label>
     {%endfor%}
+    <input type="hidden" name="libs" value="{{libs}}">
     <br>
     <input type="submit" value="Lähetä">
 </form> 
