@@ -40,7 +40,7 @@ def signin():
     db.session.commit()
     return redirect("/")
 
-@app.route("/cardsend", methods=["POST"])
+@app.route("/newcard/send", methods=["POST"])
 def cardsend():
     cardname = request.form["cardname"]
     try: two_faced = request.form["twofaced"]
