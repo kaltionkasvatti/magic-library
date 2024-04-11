@@ -22,15 +22,6 @@ def newcard():
     libs = db.session.execute(text("SELECT L.name, L.id FROM libraries L, users U WHERE L.userid=U.id AND U.username = :username"), {"username":session["username"]}).fetchall()
     return render_template("newcard.html", libs=libs )
 
-@app.route("/signin", methods=["POST"])
-def signin():
-    hash_value = generate_password_hash(request.form["password"])
-    username = request.form["username"]
-    sql = "INSERT INTO users (username, password) VALUES (:username, :password)"
-    db.session.execute(text(sql), {"username":username, "password":hash_value})
-    db.session.commit()
-    return redirect("/")
-
 @app.route("/newcard/send", methods=["POST"])
 def cardsend():
     cardname = request.form["cardname"]
@@ -77,6 +68,19 @@ def cardsend():
     db.session.commit()
     return redirect("/")
 
+@app.route("/signin", methods=["POST"])
+def signin():
+    password = request.form["password"]
+    hash_value = generate_password_hash(password)
+    username = request.form["username"]
+    if 2 < len(username) < 25 and 2 < len(password) < 25:
+        sql = "INSERT INTO users (username, password) VALUES (:username, :password)"
+        db.session.execute(text(sql), {"username":username, "password":hash_value})
+        db.session.commit()
+        return redirect("/")
+    else:
+        return render_template("ohno.html", msg=1)
+
 @app.route("/login",methods=["POST"])
 def login():
     username = request.form["username"]
@@ -85,14 +89,14 @@ def login():
     result = db.session.execute(text(sql), {"username":username})
     user = result.fetchone()    
     if not user:
-        return redirect("/ohno")
+        return render_template("ohno.html", msg=0)
     else:
         hash_value = user[1]
         if check_password_hash(hash_value, password):
             session["username"] = username
             return redirect("/")
         else:
-            return redirect("/ohno")
+            return render_template("ohno.html", msg=0)
     
 
 @app.route("/logout")
@@ -100,9 +104,7 @@ def logout():
     del session["username"]
     return redirect("/")
 
-@app.route("/ohno")
-def ohno():
-    return render_template("ohno.html")
+    
 
 @app.route("/cardedit", methods=["GET"])
 def cardedit():

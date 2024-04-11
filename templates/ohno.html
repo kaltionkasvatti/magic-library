@@ -1,8 +1,18 @@
 <!DOCTYPE html>
+{%if msg == 0%}
 <title>Voi ei!</title>
 
 <h1>Epäonnistuit</h1>
 <p>
     Väärä käyttäjätunnus tai salasana
 </p>
+{%endif%}
+{%if msg == 1%}
+<title>Voi ei!</title>
+
+<h1>Epäonnistuit</h1>
+<p>
+    Käyttäjätunnuksen sekä salasanan on oltava vähintään 2 merkkiä ja enintään 25 merkkiä.
+</p>
+{%endif%}
 <a href="/">Kokeile uudelleen</a>
