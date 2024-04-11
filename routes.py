@@ -25,25 +25,32 @@ def newcard():
 @app.route("/newcard/send", methods=["POST"])
 def cardsend():
     cardname = request.form["cardname"]
-    try: two_faced = request.form["twofaced"]
-    except: two_faced = False
-    try: colour1 = request.form["colour1"]
-    except: colour1 = ""
-    try: colour2 = request.form["colour2"]
-    except: colour2 = ""
-    try: colour3 = request.form["colour3"]
-    except: colour3 = ""
-    try: colour4 = request.form["colour4"]
-    except: colour4 = ""
-    try: colour5 = request.form["colour5"]
-    except: colour5 = ""
-    colours = colour1 + colour2 + colour3 + colour4 + colour5
+    colours = ""
+    two_faced = False
+    power = None
+    toughness = None
+    for value in request.form:
+        if value[:-1] == "colour":
+            colours += request.form[value]
+        if value == "twofaced":
+            two_faced = request.form["twofaced"]
+        if value == "power":
+            power = request.form["power"]
+        if value == "toughness":
+            toughness = request.form["toughness"]
+    #try: colour1 = request.form["colour1"]
+    ##except: colour1 = ""
+    #try: colour2 = request.form["colour2"]
+    #except: colour2 = ""
+    #try: colour3 = request.form["colour3"]
+    #except: colour3 = ""
+    #try: colour4 = request.form["colour4"]
+    #except: colour4 = ""
+    #try: colour5 = request.form["colour5"]
+    #except: colour5 = ""
+    #colours = colour1 + colour2 + colour3 + colour4 + colour5
     cmc = request.form["cmc"]
     rarity = request.form["rarity"]
-    try: power = request.form["power"]
-    except: power = None
-    try: toughness = request.form["toughness"]
-    except: toughness = None
     inlibs = []
     libs = request.form["libs"]
     for lib in libs:
