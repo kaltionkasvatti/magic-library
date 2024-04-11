@@ -25,37 +25,27 @@ def newcard():
 @app.route("/newcard/send", methods=["POST"])
 def cardsend():
     cardname = request.form["cardname"]
+    finds = db.session.execute(text("SELECT DISTINCT L.name, L.id FROM users U, libraries L WHERE L.userid=U.id AND U.username=:username"), {"username":session["username"]}).fetchall()
+    print(finds , "kaikki on hienoa")
     colours = ""
     two_faced = False
     power = None
     toughness = None
+    inlibs = []
     for value in request.form:
         if value[:-1] == "colour":
             colours += request.form[value]
-        if value == "twofaced":
+        elif value == "twofaced":
             two_faced = request.form["twofaced"]
-        if value == "power":
+        elif value == "power":
             power = request.form["power"]
-        if value == "toughness":
+        elif value == "toughness":
             toughness = request.form["toughness"]
-    #try: colour1 = request.form["colour1"]
-    ##except: colour1 = ""
-    #try: colour2 = request.form["colour2"]
-    #except: colour2 = ""
-    #try: colour3 = request.form["colour3"]
-    #except: colour3 = ""
-    #try: colour4 = request.form["colour4"]
-    #except: colour4 = ""
-    #try: colour5 = request.form["colour5"]
-    #except: colour5 = ""
-    #colours = colour1 + colour2 + colour3 + colour4 + colour5
+        elif value != "cmc" and value != "rarity" and value != "cardname" and value != "libs":
+            inlibs.append((value, request.form[value]))
     cmc = request.form["cmc"]
     rarity = request.form["rarity"]
-    inlibs = []
-    libs = request.form["libs"]
-    for lib in libs:
-        try: inlibs.append((lib[1], request.form[lib[0]]))
-        except: pass
+
     user = db.session.execute(text("SELECT id FROM users WHERE username=:username"), {"username":session["username"]}).fetchone()[0]
     sql= """INSERT INTO cards (name, twofaced, colour, cmc, rarity, power, toughness, userid) 
             VALUES (:cardname, :twofaced, :colours, :cmc, :rarity, :power, :toughness, :user)"""
@@ -67,8 +57,9 @@ def cardsend():
     print(userid)
     if len(inlibs) != 0:
         for i in inlibs:
+            print(i)
             sql = "INSERT INTO cardlib (card, library, visible) VALUES (:userid, :library, True)"
-            db.session.execute(text(sql), {"userid":userid, "library":i[0]})
+            db.session.execute(text(sql), {"userid":userid, "library":i[1]})
     else:
         sql = "INSERT INTO cardlib (card, library, visible) VALUES (:userid, 0, True)"
         db.session.execute(text(sql), {"userid":userid})
