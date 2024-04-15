@@ -54,7 +54,6 @@ def cardsend():
     userid = db.session.execute(text("""
                             SELECT id FROM cards WHERE name=:cardname AND rarity=:rarity AND colour=:colours ORDER BY id DESC LIMIT 1"""
                             ), {"cardname":cardname, "rarity":rarity, "colours":colours}).fetchone()[0]
-    print(userid)
     if len(inlibs) != 0:
         for i in inlibs:
             print(i)
@@ -109,7 +108,7 @@ def cardedit():
     card = request.args["card"]
     sql = "SELECT name, twofaced, colour, cmc, rarity, power, toughness FROM cards WHERE id=:card"
     result = db.session.execute(text(sql), {"card":card}).fetchone()
-    sql = "SELECT name FROM libraries" 
+    sql = "SELECT name, id FROM libraries" 
     libs = db.session.execute(text(sql)).fetchall()
     sql = "SELECT library FROM cardlib WHERE card=:card"
     connected = db.session.execute(text(sql), {"card":card}).fetchall()

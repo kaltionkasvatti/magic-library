@@ -18,3 +18,51 @@
 {{libs}}
 <br>
 {{connected}}
+
+<!DOCTYPE html>
+<form action="/cardedit/send " method="POST">
+    Kortin nimi: <br>
+    <textarea name="cardname" id="cardname" rows="1" cols="50" type="text" value="{{result[0]}}"></textarea>
+    <script>window.onload = function() {
+        document.getElementById('cardname').value = "{{result[0]}}"
+    };</script>
+    <br>    
+        <input type="checkbox" name="twofaced" value="True" {%if result[1]%} checked {%endif%}>
+        <label for ="twofaced"> Kaksipuolinen</label>
+    <br>
+        <b>Värit (kaikki):</b>
+    <br>
+        <input type="checkbox" name="colour1" value="b" {%if "b" in result[2]%} checked {%endif%}>
+        <label for="colour1"> Musta</label>
+        <input type="checkbox" name="colour2" value="u" {%if "u" in result[2]%} checked {%endif%}>
+        <label for="colour2"> Sininen</label>
+        <input type="checkbox" name="colour3" value="g" {%if "g" in result[2]%} checked {%endif%}>
+        <label for="colour3"> Vihreä</label>
+        <input type="checkbox" name="colour4" value="r" {%if "r" in result[2]%} checked {%endif%}>
+        <label for="colour4"> Punainen</label>
+        <input type="checkbox" name="colour5" value="w" {%if "w" in result[2]%} checked {%endif%}>
+        <label for="colour5"> Valkoinen</label>
+    <br>
+        Mana value (x on 0):    <input type="number" name="cmc" min="0" max="100" value={{result[3]}}>
+    <br>
+   
+    Harvinaisuus:
+    <select name="rarity">
+        <option value="common" {%if result[4] == "common" %}selected {%endif%}> Common
+        <option value="uncommon" {%if result[4] == "uncommon" %}selected {%endif%}> Uncommon
+        <option value="rare" {%if result[4] == "rare" %}selected {%endif%}> Rare
+        <option value="mythic" {%if result[4] == "mythic" %}selected {%endif%}> Mythic Rare
+    </select>
+    <br>
+    Power (X ja * ovat 0): <input type="number" name="power" min="0" max="100" value={{result[5]}}>
+    <br>
+    Toughness (X ja * ovat 0): <input type="number" name="toughness" min="0" max="100" value={{result[6]}}>
+    <br>
+    {%for folder in libs%}
+        <input type="checkbox" name="{{folder[0]}}" value="{{folder[1]}}">
+        <label for="{{folder[0]}}">{{folder[0]}}</label>
+    {%endfor%}
+    <input type="hidden" name="libs" value="{{libs}}">
+    <br>
+    <input type="submit" value="Lähetä">
+</form> 
