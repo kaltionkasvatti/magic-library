@@ -116,3 +116,44 @@ def cardedit():
     for place in places:
         connected = connected + str(place[0])
     return render_template("cardedit.html", id=card, result=result, libs=libs, connected=connected) 
+
+@app.route("/cardedit/send", methods=["POST"])
+def sendedit():
+    card = request.form["card"]
+    cardname = request.form["cardname"]
+    finds = db.session.execute(text("SELECT DISTINCT L.name, L.id FROM users U, libraries L WHERE L.userid=U.id AND U.username=:username"), {"username":session["username"]}).fetchall()
+    print(finds , "kaikki on hienoa")
+    colours = ""
+    two_faced = False
+    power = None
+    toughness = None
+    inlibs = []
+    for value in request.form:
+        if value[:-1] == "colour":
+            colours += request.form[value]
+        elif value == "twofaced":
+            two_faced = request.form["twofaced"]
+        elif value == "power":
+            power = request.form["power"]
+        elif value == "toughness":
+            toughness = request.form["toughness"]
+        elif value != "cmc" and value != "rarity" and value != "cardname" and value != "libs":
+            inlibs.append((value, request.form[value]))
+    cmc = request.form["cmc"]
+    rarity = request.form["rarity"] 
+    user = db.session.execute(text("SELECT id FROM users WHERE username=:username"), {"username":session["username"]}).fetchone()[0]
+    sql = """UPDATE cards SET name=:cardname, twofaced=:two_faced, colour=:colours,
+                 cmc=:cmc, rarity=:rarity, power=:power, toughness=:toughness WHERE id=:card"""
+    db.session.execute(text(sql), {"cardname":cardname, "two_faced":two_faced, "colours":colours, "cmc":cmc, "rarity":rarity, "power":power, "toughness":toughness, "card":card})
+    sql = """DELETE FROM cardlib WHERE card=:card"""
+    db.session.execute(text(sql), {"card":card})
+    if len(inlibs) != 0:
+        for i in inlibs:
+            print(i)
+            sql = "INSERT INTO cardlib (card, library, visible) VALUES (:userid, :library, True)"
+            db.session.execute(text(sql), {"userid":user, "library":i[1]})
+    else:
+        sql = "INSERT INTO cardlib (card, library, visible) VALUES (:userid, 0, True)"
+        db.session.execute(text(sql), {"userid":user})
+    db.session.commit()
+    return redirect("/")
