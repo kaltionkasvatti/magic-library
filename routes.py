@@ -106,10 +106,13 @@ def logout():
 @app.route("/cardedit", methods=["GET"])
 def cardedit():
     card = request.args["card"]
-    sql = "SELECT name, twofaced, colour, cmc, rarity, power, toughness FROM cards WHERE id=:card"
+    sql = "SELECT name, twofaced, colour, cmc, rarity, power, toughness, id FROM cards WHERE id=:card"
     result = db.session.execute(text(sql), {"card":card}).fetchone()
     sql = "SELECT name, id FROM libraries" 
     libs = db.session.execute(text(sql)).fetchall()
     sql = "SELECT library FROM cardlib WHERE card=:card"
-    connected = db.session.execute(text(sql), {"card":card}).fetchall()
+    places = db.session.execute(text(sql), {"card":card}).fetchall()
+    connected = ""
+    for place in places:
+        connected = connected + str(place[0])
     return render_template("cardedit.html", id=card, result=result, libs=libs, connected=connected) 
