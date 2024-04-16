@@ -7,19 +7,32 @@ from werkzeug.security import check_password_hash, generate_password_hash
 @app.route("/")
 def index():
     if session:
-        finds = db.session.execute(text("SELECT DISTINCT L.name FROM users U, libraries L WHERE L.userid=U.id AND U.username=:username"), {"username":session["username"]})
+        finds = db.session.execute(text("""SELECT DISTINCT L.name FROM users U, libraries L 
+                                        WHERE L.userid=U.id AND U.username=:username"""
+                                        ), {"username":session["username"]})
         folders = finds.fetchall()
         result = db.session.execute(text("""
             SELECT C.name, C.id FROM cards C, users U , cardlib D 
-            WHERE C.userid=U.id  AND C.id=D.card AND D.visible=True AND D.library=0 AND U.username=:username"""), {"username":session["username"]})
+            WHERE C.userid=U.id  AND C.id=D.card AND D.visible=True AND D.library=0 AND U.username=:username"""
+                                         ), {"username":session["username"]})
         cards = result.fetchall()
-        return render_template("index.html", count=len(cards), cards=cards, folders=folders, number=len(folders))
+        return render_template(
+                                "index.html", 
+                                count=len(cards), 
+                                cards=cards, 
+                                folders=folders, 
+                                number=len(folders)
+                                )
     else:
         return render_template("index.html")
 
 @app.route("/newcard")
 def newcard():
-    libs = db.session.execute(text("SELECT L.name, L.id FROM libraries L, users U WHERE L.userid=U.id AND U.username = :username"), {"username":session["username"]}).fetchall()
+    libs = db.session.execute(text(
+                                    """SELECT L.name, L.id FROM libraries L, users U 
+                                   WHERE L.userid=U.id AND U.username = :username"""
+                                   ), {"username":session["username"]}).fetchall()
+    
     return render_template("newcard.html", libs=libs )
 
 @app.route("/newcard/send", methods=["POST"])
@@ -27,9 +40,9 @@ def cardsend():
     cardname = request.form["cardname"]
     cmc = request.form["cmc"]
     rarity = request.form["rarity"]
+
     if len(cardname) > 0 and len(cmc) > 0 and len(rarity) > 0:
-        finds = db.session.execute(text("SELECT DISTINCT L.name, L.id FROM users U, libraries L WHERE L.userid=U.id AND U.username=:username"), {"username":session["username"]}).fetchall()
-        print(finds , "kaikki on hienoa")
+
         colours = ""
         two_faced = False
         power = None
@@ -48,24 +61,41 @@ def cardsend():
                 inlibs.append((value, request.form[value]))
         
 
-        user = db.session.execute(text("SELECT id FROM users WHERE username=:username"), {"username":session["username"]}).fetchone()[0]
+        user = db.session.execute(text("SELECT id FROM users WHERE username=:username"), {
+                                        "username":session["username"]
+                                        }).fetchone()[0]
         sql= """INSERT INTO cards (name, twofaced, colour, cmc, rarity, power, toughness, userid) 
                 VALUES (:cardname, :twofaced, :colours, :cmc, :rarity, :power, :toughness, :user)"""
-        db.session.execute(text(sql), {"cardname":cardname, "twofaced":two_faced, "colours":colours, "cmc":cmc, "rarity":rarity, "power":power, "toughness":toughness, "user":user})
+        db.session.execute(text(sql), {
+                                        "cardname":cardname, 
+                                        "twofaced":two_faced, 
+                                        "colours":colours, 
+                                        "cmc":cmc, 
+                                        "rarity":rarity, 
+                                        "power":power, 
+                                        "toughness":toughness, 
+                                        "user":user
+                                        })
         db.session.commit()
         userid = db.session.execute(text("""
-                                SELECT id FROM cards WHERE name=:cardname AND rarity=:rarity AND colour=:colours ORDER BY id DESC LIMIT 1"""
-                                ), {"cardname":cardname, "rarity":rarity, "colours":colours}).fetchone()[0]
+                                SELECT id FROM cards WHERE name=:cardname AND rarity=:rarity AND colour=:colours 
+                                ORDER BY id DESC LIMIT 1"""
+                                ), {
+                                    "cardname":cardname, "rarity":rarity, "colours":colours
+                                    }).fetchone()[0]
+        
         if len(inlibs) != 0:
             for i in inlibs:
                 print(i)
                 sql = "INSERT INTO cardlib (card, library, visible) VALUES (:userid, :library, True)"
                 db.session.execute(text(sql), {"userid":userid, "library":i[1]})
+
         else:
             sql = "INSERT INTO cardlib (card, library, visible) VALUES (:userid, 0, True)"
             db.session.execute(text(sql), {"userid":userid})
         db.session.commit()
         return redirect("/")
+    
     else:
         return render_template("ohno.html", msg=2)
 
@@ -128,8 +158,6 @@ def sendedit():
     cmc = request.form["cmc"]
     rarity = request.form["rarity"] 
     if len(cardname) > 0 and len(cmc) > 0 and len(rarity) > 0:
-        finds = db.session.execute(text("SELECT DISTINCT L.name, L.id FROM users U, libraries L WHERE L.userid=U.id AND U.username=:username"), {"username":session["username"]}).fetchall()
-        print(finds , "kaikki on hienoa")
         colours = ""
         two_faced = False
         power = None
@@ -147,10 +175,20 @@ def sendedit():
             elif value != "cmc" and value != "rarity" and value != "cardname" and value != "libs":
                 inlibs.append((value, request.form[value]))
         
-        user = db.session.execute(text("SELECT id FROM users WHERE username=:username"), {"username":session["username"]}).fetchone()[0]
+        user = db.session.execute(text("SELECT id FROM users WHERE username=:username"), 
+                                  {"username":session["username"]}).fetchone()[0]
         sql = """UPDATE cards SET name=:cardname, twofaced=:two_faced, colour=:colours,
                     cmc=:cmc, rarity=:rarity, power=:power, toughness=:toughness WHERE id=:card"""
-        db.session.execute(text(sql), {"cardname":cardname, "two_faced":two_faced, "colours":colours, "cmc":cmc, "rarity":rarity, "power":power, "toughness":toughness, "card":card})
+        db.session.execute(text(sql), {
+                                        "cardname":cardname, 
+                                        "two_faced":two_faced, 
+                                        "colours":colours, 
+                                        "cmc":cmc, 
+                                        "rarity":rarity, 
+                                        "power":power, 
+                                        "toughness":toughness, 
+                                        "card":card
+                                        })
         sql = """DELETE FROM cardlib WHERE card=:card"""
         db.session.execute(text(sql), {"card":card})
         if len(inlibs) != 0:
