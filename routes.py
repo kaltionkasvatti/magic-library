@@ -7,7 +7,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 @app.route("/")
 def index():
     if session:
-        finds = db.session.execute(text("""SELECT DISTINCT L.name FROM users U, libraries L 
+        finds = db.session.execute(text("""SELECT DISTINCT L.name, L.id FROM users U, libraries L 
                                         WHERE L.userid=U.id AND U.username=:username"""
                                         ), {"username":session["username"]})
         folders = finds.fetchall()
@@ -57,7 +57,7 @@ def cardsend():
                 power = request.form["power"]
             elif value == "toughness":
                 toughness = request.form["toughness"]
-            elif value != "cmc" and value != "rarity" and value != "cardname" and value != "libs":
+            elif value != "cmc" and value != "rarity" and value != "cardname" and value != "libs" and value != "card":
                 inlibs.append((value, request.form[value]))
         
 
@@ -98,7 +98,84 @@ def cardsend():
     
     else:
         return render_template("ohno.html", msg=2)
+    
+@app.route("/folder", methods=["GET"])
+def folder():
+    library = request.args["folder"]
+    sql = """SELECT C.name, C.id FROM cards C, users U, cardlib D
+                WHERE C.userid=U.id  AND C.id=D.card AND D.visible=True 
+                AND D.library=:library AND U.username=:username"""
+    cards = db.session.execute(text(sql), {"library":library, "username":session["username"]}).fetchall()
+    return render_template("folder.html", cards=cards)
 
+@app.route("/cardedit", methods=["GET"])
+def cardedit():
+    card = request.args["card"]
+    sql = "SELECT name, twofaced, colour, cmc, rarity, power, toughness, id FROM cards WHERE id=:card"
+    result = db.session.execute(text(sql), {"card":card}).fetchone()
+    sql = "SELECT name, id FROM libraries" 
+    libs = db.session.execute(text(sql)).fetchall()
+    sql = "SELECT library FROM cardlib WHERE card=:card"
+    places = db.session.execute(text(sql), {"card":card}).fetchall()
+    connected = ""
+    for place in places:
+        connected = connected + str(place[0])
+    return render_template("cardedit.html", card=card, result=result, libs=libs, connected=connected) 
+
+@app.route("/cardedit/send", methods=["POST"])
+def sendedit():
+    card = request.form["card"]
+    print(card, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+    cardname = request.form["cardname"]
+    cmc = request.form["cmc"]
+    rarity = request.form["rarity"] 
+    if len(cardname) > 0 and len(cmc) > 0 and len(rarity) > 0:
+        colours = ""
+        two_faced = False
+        power = None
+        toughness = None
+        inlibs = []
+        for value in request.form:
+            if value[:-1] == "colour":
+                colours += request.form[value]
+            elif value == "twofaced":
+                two_faced = request.form["twofaced"]
+            elif value == "power":
+                power = request.form["power"]
+            elif value == "toughness":
+                toughness = request.form["toughness"]
+            elif value != "cmc" and value != "rarity" and value != "cardname" and value != "libs" and value != "card":
+                inlibs.append((value, request.form[value]))
+        
+        user = db.session.execute(text("SELECT id FROM users WHERE username=:username"), 
+                                  {"username":session["username"]}).fetchone()[0]
+        sql = """UPDATE cards SET name=:cardname, twofaced=:two_faced, colour=:colours,
+                    cmc=:cmc, rarity=:rarity, power=:power, toughness=:toughness WHERE id=:card"""
+        db.session.execute(text(sql), {
+                                        "cardname":cardname, 
+                                        "two_faced":two_faced, 
+                                        "colours":colours, 
+                                        "cmc":cmc, 
+                                        "rarity":rarity, 
+                                        "power":power, 
+                                        "toughness":toughness, 
+                                        "card":card
+                                        })
+        sql = """DELETE FROM cardlib WHERE card=:card"""
+        db.session.execute(text(sql), {"card":card})
+        if len(inlibs) != 0:
+            for i in inlibs:
+                print(i)
+                sql = "INSERT INTO cardlib (card, library, visible) VALUES (:card, :library, True)"
+                db.session.execute(text(sql), {"card":card, "library":i[1]})
+        else:
+            sql = "INSERT INTO cardlib (card, library, visible) VALUES (:userid, 0, True)"
+            db.session.execute(text(sql), {"userid":user})
+        db.session.commit()
+        return redirect("/")
+    else:
+        return render_template("ohno.html", msg=2)
+    
 @app.route("/signin", methods=["POST"])
 def signin():
     password = request.form["password"]
@@ -134,72 +211,3 @@ def login():
 def logout():
     del session["username"]
     return redirect("/")
-
-    
-
-@app.route("/cardedit", methods=["GET"])
-def cardedit():
-    card = request.args["card"]
-    sql = "SELECT name, twofaced, colour, cmc, rarity, power, toughness, id FROM cards WHERE id=:card"
-    result = db.session.execute(text(sql), {"card":card}).fetchone()
-    sql = "SELECT name, id FROM libraries" 
-    libs = db.session.execute(text(sql)).fetchall()
-    sql = "SELECT library FROM cardlib WHERE card=:card"
-    places = db.session.execute(text(sql), {"card":card}).fetchall()
-    connected = ""
-    for place in places:
-        connected = connected + str(place[0])
-    return render_template("cardedit.html", id=card, result=result, libs=libs, connected=connected) 
-
-@app.route("/cardedit/send", methods=["POST"])
-def sendedit():
-    card = request.form["card"]
-    cardname = request.form["cardname"]
-    cmc = request.form["cmc"]
-    rarity = request.form["rarity"] 
-    if len(cardname) > 0 and len(cmc) > 0 and len(rarity) > 0:
-        colours = ""
-        two_faced = False
-        power = None
-        toughness = None
-        inlibs = []
-        for value in request.form:
-            if value[:-1] == "colour":
-                colours += request.form[value]
-            elif value == "twofaced":
-                two_faced = request.form["twofaced"]
-            elif value == "power":
-                power = request.form["power"]
-            elif value == "toughness":
-                toughness = request.form["toughness"]
-            elif value != "cmc" and value != "rarity" and value != "cardname" and value != "libs":
-                inlibs.append((value, request.form[value]))
-        
-        user = db.session.execute(text("SELECT id FROM users WHERE username=:username"), 
-                                  {"username":session["username"]}).fetchone()[0]
-        sql = """UPDATE cards SET name=:cardname, twofaced=:two_faced, colour=:colours,
-                    cmc=:cmc, rarity=:rarity, power=:power, toughness=:toughness WHERE id=:card"""
-        db.session.execute(text(sql), {
-                                        "cardname":cardname, 
-                                        "two_faced":two_faced, 
-                                        "colours":colours, 
-                                        "cmc":cmc, 
-                                        "rarity":rarity, 
-                                        "power":power, 
-                                        "toughness":toughness, 
-                                        "card":card
-                                        })
-        sql = """DELETE FROM cardlib WHERE card=:card"""
-        db.session.execute(text(sql), {"card":card})
-        if len(inlibs) != 0:
-            for i in inlibs:
-                print(i)
-                sql = "INSERT INTO cardlib (card, library, visible) VALUES (:userid, :library, True)"
-                db.session.execute(text(sql), {"userid":user, "library":i[1]})
-        else:
-            sql = "INSERT INTO cardlib (card, library, visible) VALUES (:userid, 0, True)"
-            db.session.execute(text(sql), {"userid":user})
-        db.session.commit()
-        return redirect("/")
-    else:
-        return render_template("ohno.html", msg=2)

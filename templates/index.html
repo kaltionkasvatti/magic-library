@@ -9,6 +9,7 @@ Tervetuloa käyttämään MTG-kirjastoa!
     <hr>
     {%for folder in folders%}
         {{folder[0]}}       
+        <form action="/folder" method="GET"> <input type="hidden" name="folder" value="{{folder[1]}}"> <input type="submit" value="Katso"> </form>
         <hr>
     {%endfor%}
     <h3>Kortit ilman kansiota: {{count}}</h3>

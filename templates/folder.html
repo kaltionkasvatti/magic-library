@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+
+
+
+
+    {% for card in cards%} 
+        {{card[0]}}       
+        <form action="/cardedit" method="GET"> <input type="hidden" name="card" value="{{card[1]}}"> <input type="submit" value="Muokkaa"> </form>
+        <hr>
+    {% endfor %}
