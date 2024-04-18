@@ -3,6 +3,7 @@ from db import db
 from flask import render_template, redirect, request, session
 from sqlalchemy.sql import text
 from werkzeug.security import check_password_hash, generate_password_hash
+import searches as se
 
 @app.route("/")
 def index():
@@ -178,10 +179,13 @@ def signin():
     hash_value = generate_password_hash(password)
     username = request.form["username"]
     if 2 < len(username) < 25 and 2 < len(password) < 25:
-        sql = "INSERT INTO users (username, password) VALUES (:username, :password)"
-        db.session.execute(text(sql), {"username":username, "password":hash_value})
-        db.session.commit()
-        return redirect("/")
+        if len(se.seekuser(username)) == 0:
+            sql = "INSERT INTO users (username, password) VALUES (:username, :password)"
+            db.session.execute(text(sql), {"username":username, "password":hash_value})
+            db.session.commit()
+            return redirect("/")
+        else:
+            return render_template("ohno.html", msg = 3)
     else:
         return render_template("ohno.html", msg=1)
 
