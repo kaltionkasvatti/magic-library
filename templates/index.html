@@ -15,8 +15,8 @@ Tervetuloa käyttämään MTG-kirjastoa!
     <h3>Kortit ilman kansiota: {{count}}</h3>
     <hr>
     {% for card in cards%} 
-        {{card.name}}       
-        <form action="/cardedit" method="GET"> <input type="hidden" name="card" value="{{card.id}}"> <input type="submit" value="Muokkaa"> </form>
+        {{card[1]}}       
+        <form action="/cardedit" method="GET"> <input type="hidden" name="card" value="{{card[0]}}"> <input type="submit" value="Muokkaa"> </form>
         <hr>
     {% endfor %}
     <p>

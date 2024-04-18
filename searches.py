@@ -2,7 +2,7 @@ from db import db
 from flask import session
 from sqlalchemy.sql import text
 
-def seekcard(
+def cardseek(
             user: str, 
             folder: int,
             name = None,
@@ -73,7 +73,11 @@ def seekcard(
     back = db.session.execute(text(backseek)).fetchall()
     return (front, back)
 
-def seekuser(username):
+def userseek(username):
     sql = """SELECT id FROM users WHERE username=:username"""
     return db.session.execute(text(sql), {"username":username}).fetchall()
+
+def libseek(username):
+    sql = "SELECT L.name, L.id FROM libraries L, users U WHERE U.id = L.userid AND U.username=:username"
+    return db.session.execute(text(sql), {"username": username}).fetchall()
 

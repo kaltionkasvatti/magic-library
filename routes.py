@@ -8,15 +8,8 @@ import searches as se
 @app.route("/")
 def index():
     if session:
-        finds = db.session.execute(text("""SELECT DISTINCT L.name, L.id FROM users U, libraries L 
-                                        WHERE L.userid=U.id AND U.username=:username"""
-                                        ), {"username":session["username"]})
-        folders = finds.fetchall()
-        result = db.session.execute(text("""
-            SELECT C.name, C.id FROM cards C, users U , cardlib D 
-            WHERE C.userid=U.id  AND C.id=D.card AND D.visible=True AND D.library=0 AND U.username=:username"""
-                                         ), {"username":session["username"]})
-        cards = result.fetchall()
+        folders = se.libseek(session["username"])
+        cards = se.cardseek(session["username"], 0)[0]
         return render_template(
                                 "index.html", 
                                 count=len(cards), 
@@ -26,13 +19,14 @@ def index():
                                 )
     else:
         return render_template("index.html")
+    
+@app.route("/search")
+def search():
+    pass
 
 @app.route("/newcard")
 def newcard():
-    libs = db.session.execute(text(
-                                    """SELECT L.name, L.id FROM libraries L, users U 
-                                   WHERE L.userid=U.id AND U.username = :username"""
-                                   ), {"username":session["username"]}).fetchall()
+    libs = se.libseek(session["username"])
     
     return render_template("newcard.html", libs=libs )
 
@@ -79,11 +73,12 @@ def cardsend():
                                         })
         db.session.commit()
         card = db.session.execute(text("""
-                                SELECT id FROM cards WHERE name=:cardname AND rarity=:rarity AND colour=:colours 
-                                ORDER BY id DESC LIMIT 1"""
-                                ), {
-                                    "cardname":cardname, "rarity":rarity, "colours":colours
-                                    }).fetchone()[0]
+                                SELECT id FROM cards 
+                                WHERE name=:cardname AND rarity=:rarity AND colour=:colours 
+                                ORDER BY id DESC LIMIT 1
+                                """), {
+                                "cardname":cardname, "rarity":rarity, "colours":colours
+                                }).fetchone()[0]
         
         if len(inlibs) != 0:
             for i in inlibs:
@@ -115,7 +110,7 @@ def cardedit():
     sql = "SELECT name, twofaced, colour, cmc, rarity, power, toughness, id FROM cards WHERE id=:card"
     result = db.session.execute(text(sql), {"card":card}).fetchone()
     sql = "SELECT name, id FROM libraries" 
-    libs = db.session.execute(text(sql)).fetchall()
+    libs = se.libseek(session["username"])
     sql = "SELECT library FROM cardlib WHERE card=:card"
     places = db.session.execute(text(sql), {"card":card}).fetchall()
     connected = []
@@ -147,8 +142,14 @@ def sendedit():
             elif value != "cmc" and value != "rarity" and value != "cardname" and value != "libs" and value != "card":
                 inlibs.append((value, request.form[value]))
         
-        sql = """UPDATE cards SET name=:cardname, twofaced=:two_faced, colour=:colours,
-                    cmc=:cmc, rarity=:rarity, power=:power, toughness=:toughness WHERE id=:card"""
+        sql = """UPDATE cards SET name=:cardname, 
+                                twofaced=:two_faced, 
+                                colour=:colours,
+                                cmc=:cmc, 
+                                rarity=:rarity, 
+                                power=:power, 
+                                toughness=:toughness 
+                                WHERE id=:card"""
         db.session.execute(text(sql), {
                                         "cardname":cardname, 
                                         "two_faced":two_faced, 
@@ -179,7 +180,7 @@ def signin():
     hash_value = generate_password_hash(password)
     username = request.form["username"]
     if 2 < len(username) < 25 and 2 < len(password) < 25:
-        if len(se.seekuser(username)) == 0:
+        if len(se.userseek(username)) == 0:
             sql = "INSERT INTO users (username, password) VALUES (:username, :password)"
             db.session.execute(text(sql), {"username":username, "password":hash_value})
             db.session.commit()
