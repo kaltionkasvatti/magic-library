@@ -77,7 +77,7 @@ def cardsend():
                                         "user":user
                                         })
         db.session.commit()
-        userid = db.session.execute(text("""
+        card = db.session.execute(text("""
                                 SELECT id FROM cards WHERE name=:cardname AND rarity=:rarity AND colour=:colours 
                                 ORDER BY id DESC LIMIT 1"""
                                 ), {
@@ -87,12 +87,12 @@ def cardsend():
         if len(inlibs) != 0:
             for i in inlibs:
                 print(i)
-                sql = "INSERT INTO cardlib (card, library, visible) VALUES (:userid, :library, True)"
-                db.session.execute(text(sql), {"userid":userid, "library":i[1]})
+                sql = "INSERT INTO cardlib (card, library, visible) VALUES (:card, :library, True)"
+                db.session.execute(text(sql), {"card":card, "library":i[1]})
 
         else:
-            sql = "INSERT INTO cardlib (card, library, visible) VALUES (:userid, 0, True)"
-            db.session.execute(text(sql), {"userid":userid})
+            sql = "INSERT INTO cardlib (card, library, visible) VALUES (:card, 0, True)"
+            db.session.execute(text(sql), {"card":card})
         db.session.commit()
         return redirect("/")
     
