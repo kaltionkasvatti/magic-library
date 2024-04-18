@@ -117,15 +117,14 @@ def cardedit():
     libs = db.session.execute(text(sql)).fetchall()
     sql = "SELECT library FROM cardlib WHERE card=:card"
     places = db.session.execute(text(sql), {"card":card}).fetchall()
-    connected = ""
+    connected = []
     for place in places:
-        connected = connected + str(place[0])
+        connected.append(place[0])
     return render_template("cardedit.html", card=card, result=result, libs=libs, connected=connected) 
 
 @app.route("/cardedit/send", methods=["POST"])
 def sendedit():
     card = request.form["card"]
-    print(card, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
     cardname = request.form["cardname"]
     cmc = request.form["cmc"]
     rarity = request.form["rarity"] 
@@ -147,8 +146,6 @@ def sendedit():
             elif value != "cmc" and value != "rarity" and value != "cardname" and value != "libs" and value != "card":
                 inlibs.append((value, request.form[value]))
         
-        user = db.session.execute(text("SELECT id FROM users WHERE username=:username"), 
-                                  {"username":session["username"]}).fetchone()[0]
         sql = """UPDATE cards SET name=:cardname, twofaced=:two_faced, colour=:colours,
                     cmc=:cmc, rarity=:rarity, power=:power, toughness=:toughness WHERE id=:card"""
         db.session.execute(text(sql), {
@@ -165,12 +162,11 @@ def sendedit():
         db.session.execute(text(sql), {"card":card})
         if len(inlibs) != 0:
             for i in inlibs:
-                print(i)
                 sql = "INSERT INTO cardlib (card, library, visible) VALUES (:card, :library, True)"
                 db.session.execute(text(sql), {"card":card, "library":i[1]})
         else:
-            sql = "INSERT INTO cardlib (card, library, visible) VALUES (:userid, 0, True)"
-            db.session.execute(text(sql), {"userid":user})
+            sql = "INSERT INTO cardlib (card, library, visible) VALUES (:card, 0, True)"
+            db.session.execute(text(sql), {"card":card})
         db.session.commit()
         return redirect("/")
     else:

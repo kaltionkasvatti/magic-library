@@ -38,10 +38,11 @@
     Toughness (X ja * ovat 0): <input type="number" name="toughness" min="0" max="100" value={{result[6]}}>
     <br>
     {%for folder in libs%}
-        <input type="checkbox" name="{{folder[0]}}" value="{{folder[1]}}" {%if "folder[1]" in connected%} checked {%endif%}>
+        <input type="checkbox" name="{{folder[0]}}" value="{{folder[1]}}" {%if folder[1] in connected%} checked {%endif%}>
         <label for="{{folder[0]}}">{{folder[0]}}</label>
     {%endfor%}
     <input type="hidden" name="card" value="{{card}}">
+    {{card}}
     <br>
     <input type="submit" value="Lähetä">
 </form> 
