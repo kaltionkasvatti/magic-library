@@ -1,5 +1,5 @@
 from app import app
-from db import db
+from db import db, insert
 from flask import render_template, redirect, request, session
 from sqlalchemy.sql import text
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -103,8 +103,10 @@ def cardsend():
                 two_faced = request.form["twofaced"]
             elif value == "power":
                 power = request.form["power"]
+                power = power if len(power) >= 1 else None
             elif value == "toughness":
                 toughness = request.form["toughness"]
+                toughness = toughness if len(toughness) >= 1 else None
             elif value != "cmc" and value != "rarity" and value != "cardname" and value != "libs" and value != "card":
                 inlibs.append((value, request.form[value]))
         
@@ -112,19 +114,8 @@ def cardsend():
         user = db.session.execute(text("SELECT id FROM users WHERE username=:username"), {
                                         "username":session["username"]
                                         }).fetchone()[0]
-        sql= """INSERT INTO cards (name, twofaced, colour, cmc, rarity, power, toughness, userid) 
-                VALUES (:cardname, :twofaced, :colours, :cmc, :rarity, :power, :toughness, :user)"""
-        db.session.execute(text(sql), {
-                                        "cardname":cardname, 
-                                        "twofaced":two_faced, 
-                                        "colours":colours, 
-                                        "cmc":cmc, 
-                                        "rarity":rarity, 
-                                        "power":power, 
-                                        "toughness":toughness, 
-                                        "user":user
-                                        })
-        db.session.commit()
+        insert(cardname, two_faced, colours, cmc, rarity, user, power, toughness)
+        
         card = db.session.execute(text("""
                                 SELECT id FROM cards 
                                 WHERE name=:cardname AND rarity=:rarity AND colour=:colours 
@@ -135,7 +126,6 @@ def cardsend():
         
         if len(inlibs) != 0:
             for i in inlibs:
-                print(i)
                 sql = "INSERT INTO cardlib (card, library, visible) VALUES (:card, :library, True)"
                 db.session.execute(text(sql), {"card":card, "library":i[1]})
 
@@ -143,8 +133,10 @@ def cardsend():
             sql = "INSERT INTO cardlib (card, library, visible) VALUES (:card, 0, True)"
             db.session.execute(text(sql), {"card":card})
         db.session.commit()
-        return redirect("/")
-    
+        if two_faced:
+            return render_template("newback.html", card=card, msg = 0)
+        else:
+            return redirect("/")
     else:
         return render_template("ohno.html", msg=2)
     
@@ -188,6 +180,7 @@ def sendedit():
                 colours += request.form[value]
             elif value == "twofaced":
                 two_faced = request.form["twofaced"]
+                print(two_faced)
             elif value == "power":
                 power = request.form["power"]
             elif value == "toughness":
@@ -223,9 +216,48 @@ def sendedit():
             sql = "INSERT INTO cardlib (card, library, visible) VALUES (:card, 0, True)"
             db.session.execute(text(sql), {"card":card})
         db.session.commit()
-        return redirect("/")
+        print(two_faced, type(two_faced))
+        if two_faced:
+            render_template("newback.html", card=card, msg = 0)
+        else:
+            return redirect("/")
     else:
         return render_template("ohno.html", msg=2)
+    
+@app.route("/backsend", methods=["POST"])
+def backsend():
+    cardname = None
+    cmc = None
+    card = None
+    power = None
+    toughness = None
+
+    for value in request.form:
+        if value == "card":
+            card = request.form[value]
+        elif value == "cardname":
+            cardname = request.form[value]
+        elif value == "cmc":
+            cmc = request.form[value]
+        elif value == "power":
+            power = request.form[value]
+        elif value == "toughness":
+            toughness = request.form[value]
+    if cardname is not None and cmc is not None and card is not None:
+        sql = """INSERT INTO backside (frontid, name, cmc, power, toughness) 
+        VALUES (:card, :cardname, :cmc, :power, :toughness)"""
+        db.session.execute(text(sql), {
+                                        "card":card,
+                                       "cardname":cardname,
+                                       "cmc":cmc,
+                                       "power":power,
+                                       "toughness":toughness
+                                       })
+        db.session.commit()
+        return redirect("/")
+    else:
+        render_template("newback.html", card=card, msg=1)
+
 
 @app.route("/delcard", methods=["GET"])
 def delcard():

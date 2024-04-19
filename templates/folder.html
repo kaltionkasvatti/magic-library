@@ -6,7 +6,7 @@
 
     {% for card in cards%} 
         {{card[0]}}       
-        <form action="/cardedit" method="GET"> <input type="hidden" name="card" value="{{card[0]}}"> <input type="submit" value="Muokkaa"> </form>
-        <form action="/delcard" method="GET"> <input type="hidden" name="card" value="{{card[0]}}"> <input type="submit" value="Poista"> </form>
+        <form action="/cardedit" method="GET"> <input type="hidden" name="card" value="{{card[1]}}"> <input type="submit" value="Muokkaa"> </form>
+        <form action="/delcard" method="GET"> <input type="hidden" name="card" value="{{card[1]}}"> <input type="submit" value="Poista"> </form>
         <hr>
     {% endfor %}
