@@ -1,1 +1,54 @@
 <!DOCTYPE html>
+<form action="/search" method="GET">
+    Kortin nimi: <br>
+    <textarea name="cardname" rows="1" cols="50"></textarea>
+    <br>
+        <input type="checkbox" name="twofaced" value="True">
+        <label for ="twofaced"> Kaksipuolinen</label>
+    <br>
+        <b>Värit:</b>
+    <br>
+        <input type="checkbox" name="colour1" value="b">
+        <label for="colour1"> Musta</label>
+        <input type="checkbox" name="colour2" value="u">
+        <label for="colour2"> Sininen</label>
+        <input type="checkbox" name="colour3" value="g">
+        <label for="colour3"> Vihreä</label>
+        <input type="checkbox" name="colour4" value="r">
+        <label for="colour4"> Punainen</label>
+        <input type="checkbox" name="colour5" value="w">
+        <label for="colour5"> Valkoinen</label>
+    <br>
+        Mana value (x on 0):    <input type="number" name="cmc" min="0" max="100">
+    <br>
+   
+    Harvinaisuus:
+    <select name="rarity">
+        <option value="common" selected> Common
+        <option value="uncommon" > Uncommon
+        <option value="rare" > Rare
+        <option value="mythic" > Mythic Rare
+    </select>
+    <br>
+    Power (X ja * ovat 0): <input type="number" name="power" min="0" max="100">
+    <br>
+    Toughness (X ja * ovat 0): <input type="number" name="toughness" min="0" max="100">
+    <br>
+    Haku kansiosta:
+    <select name="inlib">
+        {%for folder in libs%}
+            <option value="{{folder[1]}}">{{folder[0]}}
+        {%endfor%}
+    </select>
+    <input type="hidden" name="libs" value="{{libs}}">
+    <br>
+    <input type="submit" value="Lähetä">
+</form> 
+
+<h3>Löytyi:</h3>
+    <hr>
+    {% for card in cards%} 
+        {{card[1]}}       
+        <form action="/cardedit" method="GET"> <input type="hidden" name="card" value="{{card[0]}}"> <input type="submit" value="Muokkaa"> </form>
+        <hr>
+    {% endfor %}

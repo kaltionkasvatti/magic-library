@@ -9,7 +9,7 @@ import searches as se
 def index():
     if session:
         folders = se.libseek(session["username"])
-        cards = se.cardseek(session["username"], 0)[0]
+        cards = se.cardseek(session["username"], folder=0)[0]
         return render_template(
                                 "index.html", 
                                 count=len(cards), 
@@ -22,7 +22,11 @@ def index():
     
 @app.route("/search")
 def search():
-    pass
+    libs = [("None", 0)]
+    cards = se.cardseek(session["username"])[0]
+    for library in se.libseek(session["username"]):
+        libs.append(library)
+    return render_template("search.html", cards=cards, libs=libs)
 
 @app.route("/newcard")
 def newcard():

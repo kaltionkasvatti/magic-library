@@ -4,7 +4,7 @@ from sqlalchemy.sql import text
 
 def cardseek(
             user: str, 
-            folder: int,
+            folder = None,
             name = None,
             twofaced = None,
             colours = None,
@@ -15,7 +15,6 @@ def cardseek(
     
     variables = {}
     variables["user"] = user
-    variables["folder"] = folder
     frontseek = """SELECT 
             C.id, 
             C.name, 
@@ -28,9 +27,11 @@ def cardseek(
             WHERE C.id=D.card 
             AND C.userid=U.id
             AND U.username = :user
-            AND D.library = :folder
             """
-    
+    if folder is not None:
+        frontseek = frontseek + " AND D.library = :folder"
+        variables["folder"] = folder
+
     if name is not None:
         frontseek = frontseek + " AND C.name LIKE :name"
         variables["name"] = '%' + name + '%'
