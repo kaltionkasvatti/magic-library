@@ -6,6 +6,7 @@ def cardseek(
             user: str, 
             folder = None,
             name = None,
+            cmc = None,
             twofaced = None,
             colours = None,
             rarity = None,
@@ -20,6 +21,7 @@ def cardseek(
             C.name, 
             C.twofaced, 
             C.colour, 
+            C.cmc,
             C.rarity, 
             C.power, 
             C.toughness
@@ -31,6 +33,9 @@ def cardseek(
     if folder is not None:
         frontseek = frontseek + " AND D.library = :folder"
         variables["folder"] = folder
+
+    if cmc is not None and len(cmc) > 1:
+        frontseek = frontseek + " AND C.cmc" + cmc[0] + " " + str(int(cmc[1:]))
 
     if name is not None:
         frontseek = frontseek + " AND C.name LIKE :name"

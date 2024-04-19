@@ -9,7 +9,7 @@ CREATE TABLE cards (
     name TEXT,
     twofaced BOOLEAN,
     colour TEXT,
-    cmc TEXT,
+    cmc INTEGER,
     rarity TEXT,
     power TEXT,
     toughness TEXT,

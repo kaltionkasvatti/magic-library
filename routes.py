@@ -22,8 +22,53 @@ def index():
     
 @app.route("/search")
 def search():
+
+    cardname = None
+    rarity =  None
+    twofaced = None
+    power = None
+    toughness = None
+    inlib = None
+    colours = ""
+    cmc = None
+
+    for value in request.args:
+        if value[:-1] == "colour":
+            colours += request.args[value]
+        elif value == "rarity":
+            rarity = request.args[value]
+        elif value == "cardname":
+            cardname = request.args[value]
+        elif value == "twofaced":
+            twofaced = request.args[value]
+        elif value == "ispower":
+            power = request.args[value]
+        elif value == "power":
+            power += request.args[value]
+        elif value == "istoughness":
+            toughness = request.args[value]
+        elif value == "toughness":
+            toughness += request.args[value]
+        elif value == "iscmc":
+            cmc = request.args[value]
+        elif value == "cmc":
+            cmc += request.args[value]
+        elif value == "inlib":
+            inlib = request.args[value]
+    
+    if colours == "":
+        colours = None
+
     libs = [("None", 0)]
-    cards = se.cardseek(session["username"])[0]
+    cards = se.cardseek(session["username"], 
+                        folder=inlib,
+                        name=cardname,
+                        cmc=cmc,
+                        rarity=rarity,
+                        twofaced=twofaced,
+                        power=power,
+                        toughness=toughness
+                        )[0]
     for library in se.libseek(session["username"]):
         libs.append(library)
     return render_template("search.html", cards=cards, libs=libs)

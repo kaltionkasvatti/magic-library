@@ -19,20 +19,39 @@
         <input type="checkbox" name="colour5" value="w">
         <label for="colour5"> Valkoinen</label>
     <br>
-        Mana value (x on 0):    <input type="number" name="cmc" min="0" max="100">
+        Mana value (x on 0):    
+        <select name="iscmc">
+            <option value="=" selected> Tasan
+            <option value="<="> Enintään
+            <option value=">="> Vähintään
+        </select>
+        <input type="number" name="cmc" min="0" max="100">
     <br>
    
     Harvinaisuus:
     <select name="rarity">
-        <option value="common" selected> Common
+        <option value="None" selected> None
+        <option value="common" > Common
         <option value="uncommon" > Uncommon
         <option value="rare" > Rare
         <option value="mythic" > Mythic Rare
     </select>
     <br>
-    Power (X ja * ovat 0): <input type="number" name="power" min="0" max="100">
+    Power (X ja * ovat 0): 
+    <select name="ispower">
+        <option value="=" selected> Tasan
+        <option value="<="> Enintään
+        <option value=">="> Vähintään
+    </select>
+    <input type="number" name="power" min="0" max="100">
     <br>
-    Toughness (X ja * ovat 0): <input type="number" name="toughness" min="0" max="100">
+    Toughness (X ja * ovat 0): 
+    <select name="istoughness">
+        <option value="=" selected> Tasan
+        <option value="<="> Enintään
+        <option value=">="> Vähintään
+    </select>
+    <input type="number" name="toughness" min="0" max="100">
     <br>
     Haku kansiosta:
     <select name="inlib">
