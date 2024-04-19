@@ -11,8 +11,8 @@ CREATE TABLE cards (
     colour TEXT,
     cmc INTEGER,
     rarity TEXT,
-    power TEXT,
-    toughness TEXT,
+    power INTEGER,
+    toughness INTEGER,
     userid INTEGER,
     photo INTEGER
 );

@@ -6,14 +6,14 @@ def cardseek(
             user: str, 
             folder = None,
             name = None,
-            cmc = None,
+            cmc = None, #str
             twofaced = None,
             colours = None,
             rarity = None,
             power = None, #str
             toughness = None #str
             ):
-    
+
     variables = {}
     variables["user"] = user
     frontseek = """SELECT 
@@ -29,13 +29,17 @@ def cardseek(
             WHERE C.id=D.card 
             AND C.userid=U.id
             AND U.username = :user
+            AND D.visible = True
             """
-    if folder is not None:
+    
+    if folder is not None and folder != "None":
         frontseek = frontseek + " AND D.library = :folder"
         variables["folder"] = folder
 
-    if cmc is not None and len(cmc) > 1:
-        frontseek = frontseek + " AND C.cmc" + cmc[0] + " " + str(int(cmc[1:]))
+    if cmc is not None and len(cmc) > 2:
+        if cmc[:2] == "==":
+            cmc = " " + cmc[1:]
+        frontseek = frontseek + " AND C.cmc" + cmc[:2] + " " + str(int(cmc[2:]))
 
     if name is not None:
         frontseek = frontseek + " AND C.name LIKE :name"
@@ -50,15 +54,20 @@ def cardseek(
             frontseek = frontseek + " AND C.colour LIKE :colour" + str(i)
             variables["colour" + str(i)] = '%' + colours[i] + '%'
 
-    if rarity is not None:
+    if rarity is not None and rarity != "None":
         frontseek = frontseek + " AND C.rarity = :rarity"
         variables["rarity"] = rarity
 
-    if power is not None and len(power) > 1:
-        frontseek = frontseek + " AND C.power " + power[0] + " " + str(int(power[1:]))
+    if power is not None and len(power) > 2:
+        if power[:2] == "==":
+            power = " " + power[1:]
+        print(power)
+        frontseek = frontseek + " AND C.power " + power[:2] + " " + str(int(power[2:]))
 
-    if toughness is not None and len(toughness) > 1:
-        frontseek = frontseek + " AND C.toughness " + toughness[0] + " " + str(int(toughness[1:]))
+    if toughness is not None and len(toughness) > 2:
+        if toughness[:2] == "==":
+            toughness = " " + toughness[1:]
+        frontseek = frontseek + " AND C.toughness " + toughness[:2] + " " + str(int(toughness[2:]))
     
     front = db.session.execute(text(frontseek), variables).fetchall()
 

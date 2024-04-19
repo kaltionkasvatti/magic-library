@@ -33,6 +33,7 @@ def search():
     cmc = None
 
     for value in request.args:
+        print(request.args[value])
         if value[:-1] == "colour":
             colours += request.args[value]
         elif value == "rarity":
@@ -64,13 +65,16 @@ def search():
                         folder=inlib,
                         name=cardname,
                         cmc=cmc,
+                        colours=colours,
                         rarity=rarity,
                         twofaced=twofaced,
                         power=power,
                         toughness=toughness
                         )[0]
+
     for library in se.libseek(session["username"]):
         libs.append(library)
+    
     return render_template("search.html", cards=cards, libs=libs)
 
 @app.route("/newcard")
@@ -222,6 +226,15 @@ def sendedit():
         return redirect("/")
     else:
         return render_template("ohno.html", msg=2)
+
+@app.route("/delcard", methods=["GET"])
+def delcard():
+    card = request.args["card"]
+    print(card)
+    sql = "UPDATE cardlib SET visible = False WHERE card = :card"
+    db.session.execute(text(sql), {"card":card})
+    db.session.commit()
+    return redirect("/")
     
 @app.route("/signin", methods=["POST"])
 def signin():
