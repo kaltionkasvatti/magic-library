@@ -139,7 +139,27 @@ def cardsend():
 def folder():
     library = request.args["folder"]
     cards = se.cardseek(session["username"], folder=library)
-    return render_template("folder.html", cards=cards)
+    return render_template("folder.html", cards=cards, folder=library)
+
+
+@app.route("/folder/new", methods=["POST"])
+def new_folder():
+    name = request.form["name"]
+    sql = """INSERT INTO libraries (userid, name) VALUES (:user, :name)"""
+    db.session.execute(text(sql), {"name":name, "user":se.userseek(session["username"])})
+    db.session.commit()
+    return redirect("/")
+
+
+@app.route("/folder/delete", methods=["POST"])
+def del_folder():
+    id = request.form["id"]
+    sql = """UPDATE cardlib SET library = 0 WHERE library = :id"""
+    db.session.execute(text(sql), {"id":id})
+    sql = """DELETE FROM libraries WHERE id = :id"""
+    db.session.execute(text(sql), {"id":id})
+    db.session.commit()
+    return redirect("/")
 
 
 @app.route("/cardedit", methods=["GET"])

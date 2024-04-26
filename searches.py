@@ -91,7 +91,7 @@ def cardseek(
 
 def userseek(username):
     sql = """SELECT id FROM users WHERE username=:username"""
-    return db.session.execute(text(sql), {"username":username}).fetchall()
+    return db.session.execute(text(sql), {"username":username}).fetchone()[0]
 
 
 def libseek(username):

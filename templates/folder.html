@@ -2,6 +2,10 @@
 
 <a href="/">Etusivulle</a>
 
+<form action="/folder/delete" method="POST">
+    <input type="hidden" name="id" value="{{folder}}"> <input type="submit" value="Poista kansio">
+</form>
+
 <hr>
 
     {% for card in cards[0]%} 
