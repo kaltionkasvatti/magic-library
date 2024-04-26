@@ -19,19 +19,19 @@ CREATE TABLE cards (
 
 CREATE TABLE libraries (
     id SERIAL PRIMARY KEY,
-    userid INTEGER,
+    userid INTEGER REFERENCES users,
     name TEXT
 );
 
 CREATE TABLE cardlib (
-    card INTEGER,
-    library INTEGER,
+    card INTEGER REFERENCES cards,
+    library INTEGER REFERENCES libraries,
     visible BOOLEAN
 );
 
 CREATE TABLE backside (
     id SERIAL PRIMARY KEY,
-    frontid INTEGER,
+    frontid INTEGER REFERENCES cards,
     name TEXT,
     cmc TEXT,
     power TEXT,

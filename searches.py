@@ -88,9 +88,11 @@ def cardseek(
     back = db.session.execute(text(backseek)).fetchall()
     return (front, back)
 
+
 def userseek(username):
     sql = """SELECT id FROM users WHERE username=:username"""
     return db.session.execute(text(sql), {"username":username}).fetchall()
+
 
 def libseek(username):
     sql = "SELECT L.name, L.id FROM libraries L, users U WHERE U.id = L.userid AND U.username=:username"

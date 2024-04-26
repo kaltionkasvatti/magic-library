@@ -10,7 +10,7 @@ data = getenv("DATABASE_URL")
 app.config["SQLALCHEMY_DATABASE_URI"] = data
 db = SQLAlchemy(app)
 
-def insert(cardname, two_faced, colours, cmc, rarity, user, power = None, toughness = None):
+def cardinsert(cardname, two_faced, colours, cmc, rarity, user, power = None, toughness = None):
     if toughness is None and power is None:
         sql= """INSERT INTO cards (name, twofaced, colour, cmc, rarity, userid) 
                 VALUES (:cardname, :twofaced, :colours, :cmc, :rarity, :user)"""
@@ -22,7 +22,6 @@ def insert(cardname, two_faced, colours, cmc, rarity, user, power = None, toughn
                                     "rarity":rarity, 
                                     "user":user
                                     })
-        db.session.commit()
     elif toughness is None and power is not None:
         sql= """INSERT INTO cards (name, twofaced, colour, cmc, rarity, power, userid) 
                 VALUES (:cardname, :twofaced, :colours, :cmc, :rarity, :power, :user)"""
@@ -35,7 +34,6 @@ def insert(cardname, two_faced, colours, cmc, rarity, user, power = None, toughn
                                     "power":power, 
                                     "user":user
                                     })
-        db.session.commit()
     elif toughness is not None and power is None:
         sql= """INSERT INTO cards (name, twofaced, colour, cmc, rarity, toughness, userid) 
                 VALUES (:cardname, :twofaced, :colours, :cmc, :rarity, :toughness, :user)"""
@@ -61,4 +59,10 @@ def insert(cardname, two_faced, colours, cmc, rarity, user, power = None, toughn
                                     "toughness":toughness, 
                                     "user":user
                                     })
-        db.session.commit()
+    db.session.commit()
+
+
+def lib_insert(card, library):
+    sql = "INSERT INTO cardlib (card, library, visible) VALUES (:card, :library, True)"
+    db.session.execute(text(sql), {"card":card, "library":library})
+    db.session.commit()

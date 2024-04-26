@@ -4,11 +4,12 @@
 <h1>Etusivu</h1>
 Tervetuloa käyttämään MTG-kirjastoa!
 <br>
-<a href="/search">Etsi korttia</a>
-<br>
+
 
 <hr>
 {% if session.username %}
+    <a href="/search">Etsi korttia</a>
+    <br>
     <h3>Kansioita: {{number}}</h3>
     <hr>
     {%for folder in folders%}
@@ -18,7 +19,7 @@ Tervetuloa käyttämään MTG-kirjastoa!
     {%endfor%}
     <h3>Kortit ilman kansiota: {{count}}</h3>
     <hr>
-    {% for card in cards%} 
+    {% for card in cards[0]%} 
         {{card[1]}}
         <form action="/cardedit" method="GET"> <input type="hidden" name="card" value="{{card[0]}}"> <input type="submit" value="Muokkaa"> </form>
         <form action="/delcard" method="GET"> <input type="hidden" name="card" value="{{card[0]}}"> <input type="submit" value="Poista"> </form>

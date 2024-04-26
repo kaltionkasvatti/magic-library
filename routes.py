@@ -1,15 +1,16 @@
 from app import app
-from db import db, insert
+from db import db, cardinsert, lib_insert
 from flask import render_template, redirect, request, session
 from sqlalchemy.sql import text
-from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.security import generate_password_hash
 import searches as se
+import users as us
 
 @app.route("/")
 def index():
     if session:
         folders = se.libseek(session["username"])
-        cards = se.cardseek(session["username"], folder=0)[0]
+        cards = se.cardseek(session["username"], folder=0)
         return render_template(
                                 "index.html", 
                                 count=len(cards), 
@@ -111,10 +112,8 @@ def cardsend():
                 inlibs.append((value, request.form[value]))
         
 
-        user = db.session.execute(text("SELECT id FROM users WHERE username=:username"), {
-                                        "username":session["username"]
-                                        }).fetchone()[0]
-        insert(cardname, two_faced, colours, cmc, rarity, user, power, toughness)
+        user = us.id_user(session["username"])
+        cardinsert(cardname, two_faced, colours, cmc, rarity, user, power, toughness)
         
         card = db.session.execute(text("""
                                 SELECT id FROM cards 
@@ -126,13 +125,10 @@ def cardsend():
         
         if len(inlibs) != 0:
             for i in inlibs:
-                sql = "INSERT INTO cardlib (card, library, visible) VALUES (:card, :library, True)"
-                db.session.execute(text(sql), {"card":card, "library":i[1]})
-
+                lib_insert(card, i[1])
         else:
-            sql = "INSERT INTO cardlib (card, library, visible) VALUES (:card, 0, True)"
-            db.session.execute(text(sql), {"card":card})
-        db.session.commit()
+            lib_insert(card, 0)
+
         if two_faced:
             return render_template("newback.html", card=card, msg = 0)
         else:
@@ -143,18 +139,15 @@ def cardsend():
 @app.route("/folder", methods=["GET"])
 def folder():
     library = request.args["folder"]
-    sql = """SELECT C.name, C.id FROM cards C, users U, cardlib D
-                WHERE C.userid=U.id  AND C.id=D.card AND D.visible=True 
-                AND D.library=:library AND U.username=:username"""
-    cards = db.session.execute(text(sql), {"library":library, "username":session["username"]}).fetchall()
+    cards = se.cardseek(session["username"], library)
     return render_template("folder.html", cards=cards)
+
 
 @app.route("/cardedit", methods=["GET"])
 def cardedit():
     card = request.args["card"]
     sql = "SELECT name, twofaced, colour, cmc, rarity, power, toughness, id FROM cards WHERE id=:card"
     result = db.session.execute(text(sql), {"card":card}).fetchone()
-    sql = "SELECT name, id FROM libraries" 
     libs = se.libseek(session["username"])
     sql = "SELECT library FROM cardlib WHERE card=:card"
     places = db.session.execute(text(sql), {"card":card}).fetchall()
@@ -183,8 +176,10 @@ def sendedit():
                 print(two_faced)
             elif value == "power":
                 power = request.form["power"]
+                power = None if power == "" else power
             elif value == "toughness":
                 toughness = request.form["toughness"]
+                toughness = None if toughness == "" else toughness
             elif value != "cmc" and value != "rarity" and value != "cardname" and value != "libs" and value != "card":
                 inlibs.append((value, request.form[value]))
         
@@ -208,17 +203,15 @@ def sendedit():
                                         })
         sql = """DELETE FROM cardlib WHERE card=:card"""
         db.session.execute(text(sql), {"card":card})
+
         if len(inlibs) != 0:
             for i in inlibs:
-                sql = "INSERT INTO cardlib (card, library, visible) VALUES (:card, :library, True)"
-                db.session.execute(text(sql), {"card":card, "library":i[1]})
+                lib_insert(card, i[1])
         else:
-            sql = "INSERT INTO cardlib (card, library, visible) VALUES (:card, 0, True)"
-            db.session.execute(text(sql), {"card":card})
-        db.session.commit()
-        print(two_faced, type(two_faced))
+            lib_insert(card, 0)
+
         if two_faced:
-            render_template("newback.html", card=card, msg = 0)
+            return render_template("newback.html", card=card, msg = 0)
         else:
             return redirect("/")
     else:
@@ -262,7 +255,6 @@ def backsend():
 @app.route("/delcard", methods=["GET"])
 def delcard():
     card = request.args["card"]
-    print(card)
     sql = "UPDATE cardlib SET visible = False WHERE card = :card"
     db.session.execute(text(sql), {"card":card})
     db.session.commit()
@@ -271,36 +263,29 @@ def delcard():
 @app.route("/signin", methods=["POST"])
 def signin():
     password = request.form["password"]
-    hash_value = generate_password_hash(password)
     username = request.form["username"]
     if 2 < len(username) < 25 and 2 < len(password) < 25:
         if len(se.userseek(username)) == 0:
-            sql = "INSERT INTO users (username, password) VALUES (:username, :password)"
-            db.session.execute(text(sql), {"username":username, "password":hash_value})
-            db.session.commit()
+            us.insert_user(username, password)
             return redirect("/")
+        
         else:
             return render_template("ohno.html", msg = 3)
+        
     else:
         return render_template("ohno.html", msg=1)
+
 
 @app.route("/login",methods=["POST"])
 def login():
     username = request.form["username"]
     password = request.form["password"]
-    sql = "SELECT id, password FROM users WHERE username=:username"
-    result = db.session.execute(text(sql), {"username":username})
-    user = result.fetchone()    
-    if not user:
-        return render_template("ohno.html", msg=0)
-    else:
-        hash_value = user[1]
-        if check_password_hash(hash_value, password):
-            session["username"] = username
-            return redirect("/")
-        else:
-            return render_template("ohno.html", msg=0)
     
+    if not us.valid_user(username, password):
+        return render_template("ohno.html", msg=0)
+    session["username"] = username
+    return redirect("/")
+
 
 @app.route("/logout")
 def logout():
