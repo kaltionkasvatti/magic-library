@@ -234,8 +234,11 @@ def backsend():
             cmc = request.form[value]
         elif value == "power":
             power = request.form[value]
+            power = None if power == "" else power
         elif value == "toughness":
             toughness = request.form[value]
+            toughness = None if toughness == "" else toughness
+
     if cardname is not None and cmc is not None and card is not None:
         sql = """INSERT INTO backside (frontid, name, cmc, power, toughness) 
         VALUES (:card, :cardname, :cmc, :power, :toughness)"""
@@ -248,6 +251,7 @@ def backsend():
                                        })
         db.session.commit()
         return redirect("/")
+
     else:
         render_template("newback.html", card=card, msg=1)
 
@@ -283,6 +287,7 @@ def login():
     
     if not us.valid_user(username, password):
         return render_template("ohno.html", msg=0)
+    
     session["username"] = username
     return redirect("/")
 
