@@ -2,7 +2,6 @@ from app import app
 from db import db, cardinsert, lib_insert
 from flask import render_template, redirect, request, session
 from sqlalchemy.sql import text
-from werkzeug.security import generate_password_hash
 import searches as se
 import users as us
 
@@ -13,7 +12,7 @@ def index():
         cards = se.cardseek(session["username"], folder=0)
         return render_template(
                                 "index.html", 
-                                count=len(cards), 
+                                count=len(cards[0]), 
                                 cards=cards, 
                                 folders=folders, 
                                 number=len(folders)
@@ -139,7 +138,7 @@ def cardsend():
 @app.route("/folder", methods=["GET"])
 def folder():
     library = request.args["folder"]
-    cards = se.cardseek(session["username"], library)
+    cards = se.cardseek(session["username"], folder=library)
     return render_template("folder.html", cards=cards)
 
 
