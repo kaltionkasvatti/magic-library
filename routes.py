@@ -1,9 +1,10 @@
 from app import app
 from db import db, cardinsert, lib_insert
-from flask import render_template, redirect, request, session
+from flask import abort, render_template, redirect, request, session
 from sqlalchemy.sql import text
 import searches as se
 import users as us
+from secrets import token_hex
 
 @app.route("/")
 def index():
@@ -85,6 +86,8 @@ def newcard():
 
 @app.route("/newcard/send", methods=["POST"])
 def cardsend():
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
     cardname = request.form["cardname"]
     cmc = request.form["cmc"]
     rarity = request.form["rarity"]
@@ -144,6 +147,8 @@ def folder():
 
 @app.route("/folder/new", methods=["POST"])
 def new_folder():
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
     name = request.form["name"]
     sql = """INSERT INTO libraries (userid, name) VALUES (:user, :name)"""
     db.session.execute(text(sql), {"name":name, "user":se.userseek(session["username"])})
@@ -153,6 +158,8 @@ def new_folder():
 
 @app.route("/folder/delete", methods=["POST"])
 def del_folder():
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
     id = request.form["id"]
     sql = """UPDATE cardlib SET library = 0 WHERE library = :id"""
     db.session.execute(text(sql), {"id":id})
@@ -177,6 +184,8 @@ def cardedit():
 
 @app.route("/cardedit/send", methods=["POST"])
 def sendedit():
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
     card = request.form["card"]
     cardname = request.form["cardname"]
     cmc = request.form["cmc"]
@@ -238,6 +247,8 @@ def sendedit():
     
 @app.route("/backsend", methods=["POST"])
 def backsend():
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
     cardname = None
     cmc = None
     card = None
@@ -308,10 +319,13 @@ def login():
         return render_template("ohno.html", msg=0)
     
     session["username"] = username
+    session["csrf_token"] = token_hex(16)
     return redirect("/")
 
 
 @app.route("/logout")
 def logout():
+    del session["csrf_token"]
     del session["username"]
+    
     return redirect("/")

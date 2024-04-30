@@ -18,5 +18,6 @@
     Toughness (X ja * ovat 0), jätä tyhjäksi jos kortissa ei ole: <input type="number" name="toughness" min="0" max="100">
     <br>
     <input type="hidden" name="card" value="{{card}}">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="submit" value="Lähetä">
 </form> 

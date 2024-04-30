@@ -42,6 +42,7 @@
         <label for="{{folder[0]}}">{{folder[0]}}</label>
     {%endfor%}
     <input type="hidden" name="libs" value="{{libs}}">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <br>
     <input type="submit" value="Lähetä">
 </form> 
