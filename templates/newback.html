@@ -4,20 +4,41 @@
         Täytä ainakin nimi ja kortin arvo
     </h3>
 {%endif%}
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<title>Etusivu</title>
 
-<form action="/backsend" method="POST">
-    Kortin nimi: <br>
-    <textarea name="cardname" rows="1" cols="50"></textarea>
-    <br>
-        <b>Värit (kaikki):</b>
-    <br>
-        Mana value (x on 0):    <input type="number" name="cmc" min="0" max="100">
-    <br>
-    Power (X ja * ovat 0), jätä tyhjäksi jos kortissa ei ole: <input type="number" name="power" min="0" max="100">
-    <br>
-    Toughness (X ja * ovat 0), jätä tyhjäksi jos kortissa ei ole: <input type="number" name="toughness" min="0" max="100">
-    <br>
-    <input type="hidden" name="card" value="{{card}}">
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    <input type="submit" value="Lähetä">
-</form> 
+<div class="container">
+    <nav class="navbar navbar-expand-sm navbar-light">
+        <a class="navbar-brand" href="/">Etusivu</a>
+        <ul class="navbar-nav">
+        {% if session.username %}
+            <li class="nav-item">
+                <a class="nav-link" href="/search">Etsi korttia</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/newcard">Lisää kortti</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/logout">Kirjaudu ulos</a>
+            </li>
+        {% endif %}
+        </ul>
+    </nav>
+    <form action="/backsend" method="POST">
+        Kortin nimi: <br>
+        <textarea name="cardname" rows="1" cols="50"></textarea>
+        <br>
+            <b>Värit (kaikki):</b>
+        <br>
+            Mana value (x on 0):    <input type="number" name="cmc" min="0" max="100">
+        <br>
+        Power (X ja * ovat 0), jätä tyhjäksi jos kortissa ei ole: <input type="number" name="power" min="0" max="100">
+        <br>
+        Toughness (X ja * ovat 0), jätä tyhjäksi jos kortissa ei ole: <input type="number" name="toughness" min="0" max="100">
+        <br>
+        <input type="hidden" name="card" value="{{card}}">
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        <input type="submit" value="Lähetä">
+    </form> 
+</div>

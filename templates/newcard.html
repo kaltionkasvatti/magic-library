@@ -1,48 +1,68 @@
 <!DOCTYPE html>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<title>Etusivu</title>
 
-<a href="/">Palaa</a>
+<div class="container">
+    <nav class="navbar navbar-expand-sm navbar-light">
+        <a class="navbar-brand" href="/">Etusivu</a>
+        <ul class="navbar-nav">
+        {% if session.username %}
+            <li class="nav-item">
+                <a class="nav-link" href="/search">Etsi korttia</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/newcard">Lisää kortti</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/logout">Kirjaudu ulos</a>
+            </li>
+        {% endif %}
+        </ul>
+    </nav>
 
-<form action="/newcard/send " method="POST">
-    Kortin nimi: <br>
-    <textarea name="cardname" rows="1" cols="50"></textarea>
-    <br>
-        <input type="checkbox" name="twofaced" value="True">
-        <label for ="twofaced"> Kaksipuolinen</label>
-    <br>
-        <b>Värit (kaikki):</b>
-    <br>
-        <input type="checkbox" name="colour1" value="b">
-        <label for="colour1"> Musta</label>
-        <input type="checkbox" name="colour2" value="u">
-        <label for="colour2"> Sininen</label>
-        <input type="checkbox" name="colour3" value="g">
-        <label for="colour3"> Vihreä</label>
-        <input type="checkbox" name="colour4" value="r">
-        <label for="colour4"> Punainen</label>
-        <input type="checkbox" name="colour5" value="w">
-        <label for="colour5"> Valkoinen</label>
-    <br>
-        Mana value (x on 0):    <input type="number" name="cmc" min="0" max="100">
-    <br>
-   
-    Harvinaisuus:
-    <select name="rarity">
-        <option value="common" selected> Common
-        <option value="uncommon" > Uncommon
-        <option value="rare" > Rare
-        <option value="mythic" > Mythic Rare
-    </select>
-    <br>
-    Power (X ja * ovat 0): <input type="number" name="power" min="0" max="100">
-    <br>
-    Toughness (X ja * ovat 0): <input type="number" name="toughness" min="0" max="100">
-    <br>
-    {%for folder in libs%}
-        <input type="checkbox" name="{{folder[0]}}" value="{{folder[1]}}">
-        <label for="{{folder[0]}}">{{folder[0]}}</label>
-    {%endfor%}
-    <input type="hidden" name="libs" value="{{libs}}">
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    <br>
-    <input type="submit" value="Lähetä">
-</form> 
+    <form action="/newcard/send " method="POST">
+        Kortin nimi: <br>
+        <textarea name="cardname" rows="1" cols="50"></textarea>
+        <br>
+            <input type="checkbox" name="twofaced" value="True">
+            <label for ="twofaced"> Kaksipuolinen</label>
+        <br>
+            <b>Värit (kaikki):</b>
+        <br>
+            <input type="checkbox" name="colour1" value="b">
+            <label for="colour1"> Musta</label>
+            <input type="checkbox" name="colour2" value="u">
+            <label for="colour2"> Sininen</label>
+            <input type="checkbox" name="colour3" value="g">
+            <label for="colour3"> Vihreä</label>
+            <input type="checkbox" name="colour4" value="r">
+            <label for="colour4"> Punainen</label>
+            <input type="checkbox" name="colour5" value="w">
+            <label for="colour5"> Valkoinen</label>
+        <br>
+            Mana value (x on 0):    <input type="number" name="cmc" min="0" max="100">
+        <br>
+    
+        Harvinaisuus:
+        <select name="rarity">
+            <option value="common" selected> Common
+            <option value="uncommon" > Uncommon
+            <option value="rare" > Rare
+            <option value="mythic" > Mythic Rare
+        </select>
+        <br>
+        Power (X ja * ovat 0): <input type="number" name="power" min="0" max="100">
+        <br>
+        Toughness (X ja * ovat 0): <input type="number" name="toughness" min="0" max="100">
+        <br>
+        {%for folder in libs%}
+            <input type="checkbox" name="{{folder[0]}}" value="{{folder[1]}}">
+            <label for="{{folder[0]}}">{{folder[0]}}</label>
+        {%endfor%}
+        <input type="hidden" name="libs" value="{{libs}}">
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        <br>
+        <input type="submit" value="Lähetä">
+    </form> 
+</div>
