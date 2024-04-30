@@ -98,3 +98,12 @@ def libseek(username):
     sql = "SELECT L.name, L.id FROM libraries L, users U WHERE U.id = L.userid AND U.username=:username"
     return db.session.execute(text(sql), {"username": username}).fetchall()
 
+def cmcavg(folder):
+    sql = """
+            SELECT AVG(C.cmc) FROM cards C 
+                                JOIN cardlib D ON C.id = D.card
+                                JOIN libraries L ON L.id = D.library
+            WHERE L.id = :folder
+            AND D.visible =  True
+            """
+    return round(db.session.execute(text(sql), {"folder":folder}).fetchone()[0], 2)

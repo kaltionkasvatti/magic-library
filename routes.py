@@ -110,7 +110,14 @@ def cardsend():
             elif value == "toughness":
                 toughness = request.form["toughness"]
                 toughness = toughness if len(toughness) >= 1 else None
-            elif value != "cmc" and value != "rarity" and value != "cardname" and value != "libs" and value != "card":
+            elif (
+                value != "cmc" 
+                and value != "rarity" 
+                and value != "cardname" 
+                and value != "libs" 
+                and value != "card"
+                and value != "csrf_token"
+                ):
                 inlibs.append((value, request.form[value]))
         
 
@@ -142,7 +149,8 @@ def cardsend():
 def folder():
     library = request.args["folder"]
     cards = se.cardseek(session["username"], folder=library)
-    return render_template("folder.html", cards=cards, folder=library)
+    cmcavg = se.cmcavg(library)
+    return render_template("folder.html", cards=cards, folder=library, cmcavg=cmcavg)
 
 
 @app.route("/folder/new", methods=["POST"])
@@ -208,7 +216,13 @@ def sendedit():
             elif value == "toughness":
                 toughness = request.form["toughness"]
                 toughness = None if toughness == "" else toughness
-            elif value != "cmc" and value != "rarity" and value != "cardname" and value != "libs" and value != "card":
+            elif (value != "cmc"
+                  and value != "rarity"
+                  and value != "cardname"
+                  and value != "libs"
+                  and value != "card"
+                  and value != "csrf_token"
+                  ):
                 inlibs.append((value, request.form[value]))
         
         sql = """UPDATE cards SET name=:cardname, 
