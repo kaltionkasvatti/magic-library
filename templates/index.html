@@ -20,6 +20,7 @@
         {% endif %}
         </ul>
     </nav>
+    <br>
     <div class="row">
         {% if session.username %}
             <div class="col-8">
@@ -27,19 +28,19 @@
             <hr>
             {% for card in cards[0]%} 
                     <ul class="list-group list-group-horizontal">
-                        <li class="list-group-item">
+                        <li class="list-group-item flex-fill">
                             {{card[1]}}
                         </li>
-                        <li class="list-group-item">
+                        <li class="list-group-item flex-fill">
                             <form action="/cardedit" method="GET"> 
                                 <input type="hidden" name="card" value="{{card[0]}}"> 
-                                <input type="submit" value="Muokkaa"> 
+                                <input class="btn btn-primary" type="submit" value="Muokkaa"> 
                             </form>
                         </li>
-                        <li class="list-group-item">
+                        <li class="list-group-item flex-fill">
                             <form action="/delcard" method="GET"> 
                                 <input type="hidden" name="card" value="{{card[0]}}"> 
-                                <input type="submit" value="Poista" onclick="return usure(event)"> 
+                                <input class="btn btn-danger" type="submit" value="Poista" onclick="return usure(event)"> 
                             </form>
                         </li>
                     </ul>

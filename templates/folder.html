@@ -19,48 +19,51 @@
         {% endif %}
         </ul>
     </nav>
-
-    <form action="/folder/delete" method="POST">
-        <input type="hidden" name="id" value="{{folder}}">
-        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-        <input type="submit" value="Poista kansio" onclick="usure(event)">
-    </form>
-
-    <hr>
-    <p>
-        Korttien keskimääräinen mana-arvo: {{cmcavg}}
-    </p>
-    <ul class="list-group list-group-flush">
-    {% for card in cards[0]%} 
-        <li class="list-group-item">
-            <ul class="list-group list-group-horizontal">
-                <li class="list-group-item">
-                    {{card[1]}}
-                </li>
-                <li class="list-group-item">
-                    <form action="/cardedit" method="GET"> 
-                        <input type="hidden" name="card" value="{{card[0]}}"> 
-                        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                        <input type="submit" value="Muokkaa"> 
-                    </form>
-                </li>
-                <li class="list-group-item">
-                    <form action="/delcard" method="GET"> 
-                        <input type="hidden" name="card" value="{{card[0]}}"> 
-                        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                        <input type="submit" value="Poista" onClick='return usure(event)'> 
-                    </form>
-                </li>
+    <div class="row">
+        <div class="col-8">
+            <ul class="list-group list-group-flush">
+                {% for card in cards[0]%} 
+                    <li class="list-group-item">
+                        <ul class="list-group list-group-horizontal">
+                            <li class="list-group-item">
+                                {{card[1]}}
+                            </li>
+                            <li class="list-group-item">
+                                <form action="/cardedit" method="GET"> 
+                                    <input type="hidden" name="card" value="{{card[0]}}"> 
+                                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                                    <input class="btn btn-primary" type="submit" value="Muokkaa">
+                                </form>
+                            </li>
+                            <li class="list-group-item">
+                                <form action="/delcard" method="GET"> 
+                                    <input type="hidden" name="card" value="{{card[0]}}"> 
+                                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                                    <input class="btn btn-danger" type="submit" value="Poista" onClick='return usure(event)'> 
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                {% endfor %}
             </ul>
-        </li>
-    {% endfor %}
-    </ul>
-    <script>
-        function usure(event) {
-            let text = "Oletko varma, että haluat poistaa?";
-            if (confirm(text) == false) {
-                event.preventDefault();
+        </div>
+        <div class="col-4">
+            <p>
+                Korttien keskimääräinen mana-arvo: {{cmcavg}}
+            </p>
+            <form action="/folder/delete" method="POST">
+                <input type="hidden" name="id" value="{{folder}}">
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                <input class="btn btn-danger" type="submit" value="Poista kansio" onclick="return usure(event)">
+            </form>
+        </div>
+        <script>
+            function usure(event) {
+                let text = "Oletko varma, että haluat poistaa?";
+                if (confirm(text) == false) {
+                    event.preventDefault();
+                }
             }
-        }
-    </script>
+        </script>
+    </div>
 </div>

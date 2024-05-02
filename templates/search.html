@@ -21,27 +21,48 @@
         </ul>
     </nav>
     <form action="/search" method="GET">
-        Kortin nimi: <br>
-        <textarea name="cardname" rows="1" cols="50"></textarea>
+        <div class="mb-3">
+            <label for="cardname" class="form-label">Kortin nimi</label>
+            <input name="cardname" class="form-control" rows="1" cols="20"></textarea>
+        </div>
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" name="twofaced" value="True">
+            <label class="form-check-label" for ="twofaced"> Kaksipuolinen</label>
+        </div>
+        <b>Värit:</b>
         <br>
-            <input type="checkbox" name="twofaced" value="True">
-            <label for ="twofaced"> Kaksipuolinen</label>
+        <div class="mb-3 form-check form-check-inline">
+            <input type="checkbox" class="form-check-input" name="colour1" value="b">
+            <label class="form-check-label" for="colour1"> Musta</label>
+        </div>
+        <div class="mb-3 form-check form-check-inline">
+            <input type="checkbox" class="form-check-input" name="colour2" value="u">
+            <label class="form-check-label" for="colour2"> Sininen</label>
+        </div>
+        <div class="mb-3 form-check form-check-inline">
+            <input type="checkbox" class="form-check-input" name="colour3" value="g">
+            <label class="form-check-label" for="colour3"> Vihreä</label>
+        </div>
+        <div class="mb-3 form-check form-check-inline">
+            <input type="checkbox" class="form-check-input" name="colour4" value="r">
+            <label class="form-check-label" for="colour4"> Punainen</label>
+        </div>
+        <div class="mb-3 form-check form-check-inline">
+            <input type="checkbox" class="form-check-input" name="colour5" value="w">
+            <label class="form-check-label" for="colour5"> Valkoinen</label>
+        </div>
         <br>
-            <b>Värit:</b>
+        Harvinaisuus:
+            <select name="rarity" class="form-select" aria-label="Default select example">
+                <option value="None" selected> None
+                <option value="common" > Common
+                <option value="uncommon" > Uncommon
+                <option value="rare" > Rare
+                <option value="mythic" > Mythic Rare
+            </select>
         <br>
-            <input type="checkbox" name="colour1" value="b">
-            <label for="colour1"> Musta</label>
-            <input type="checkbox" name="colour2" value="u">
-            <label for="colour2"> Sininen</label>
-            <input type="checkbox" name="colour3" value="g">
-            <label for="colour3"> Vihreä</label>
-            <input type="checkbox" name="colour4" value="r">
-            <label for="colour4"> Punainen</label>
-            <input type="checkbox" name="colour5" value="w">
-            <label for="colour5"> Valkoinen</label>
-        <br>
-            Mana value (x on 0):    
-            <select name="iscmc">
+            Mana value (X on 0):    
+            <select name="iscmc" class="form-select" aria-label="Default select example">
                 <option value="==" selected> Tasan
                 <option value="<="> Enintään
                 <option value=">="> Vähintään
@@ -49,17 +70,8 @@
             <input type="number" name="cmc" min="0" max="100">
         <br>
     
-        Harvinaisuus:
-        <select name="rarity">
-            <option value="None" selected> None
-            <option value="common" > Common
-            <option value="uncommon" > Uncommon
-            <option value="rare" > Rare
-            <option value="mythic" > Mythic Rare
-        </select>
-        <br>
         Power (X ja * ovat 0): 
-        <select name="ispower">
+        <select name="ispower" class="form-select" aria-label="Default select example">
             <option value="==" selected> Tasan
             <option value="<="> Enintään
             <option value=">="> Vähintään
@@ -67,7 +79,7 @@
         <input type="number" name="power" min="0" max="100">
         <br>
         Toughness (X ja * ovat 0): 
-        <select name="istoughness">
+        <select name="istoughness" class="form-select" aria-label="Default select example">
             <option value="==" selected> Tasan
             <option value="<="> Enintään
             <option value=">="> Vähintään
@@ -75,7 +87,7 @@
         <input type="number" name="toughness" min="0" max="100">
         <br>
         Haku kansiosta:
-        <select name="inlib">
+        <select name="inlib" class="form-select" aria-label="Default select example">
             <option value="None"> All
             {%for folder in libs%}
                 <option value="{{folder[1]}}">{{folder[0]}}
@@ -83,15 +95,28 @@
         </select>
         <input type="hidden" name="libs" value="{{libs}}">
         <br>
-        <input type="submit" value="Lähetä">
+        <input type="submit" value="Etsi">
     </form> 
 
     <h3>Löytyi:</h3>
         <hr>
         {% for card in cards%} 
-            {{card[1]}}       
-            <form action="/cardedit" method="GET"> <input type="hidden" name="card" value="{{card[0]}}"> <input type="submit" value="Muokkaa"> </form>
-            <form action="/delcard" method="GET"> <input type="hidden" name="card" value="{{card[0]}}"> <input type="submit" value="Poista"> </form>
-            <hr>
+            <ul class="list-group list-group-horizontal">
+                <li class="list-group-item">
+                    {{card[1]}}
+                </li>
+                <li class="list-group-item">
+                    <form action="/cardedit" method="GET"> 
+                        <input type="hidden" name="card" value="{{card[0]}}"> 
+                        <input class="btn btn-primary" type="submit" value="Muokkaa"> 
+                    </form>
+                </li>
+                <li class="list-group-item">
+                    <form action="/delcard" method="GET"> 
+                        <input type="hidden" name="card" value="{{card[0]}}"> 
+                        <input class="btn btn-danger" type="submit" value="Poista" onclick="return usure(event)"> 
+                    </form>
+                </li>
+            </ul>
         {% endfor %}
 </div>
