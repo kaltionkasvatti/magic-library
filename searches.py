@@ -61,7 +61,6 @@ def cardseek(
     if power is not None and len(power) > 2:
         if power[:2] == "==":
             power = " " + power[1:]
-        print(power)
         frontseek = frontseek + " AND C.power " + power[:2] + " " + str(int(power[2:]))
 
     if toughness is not None and len(toughness) > 2:

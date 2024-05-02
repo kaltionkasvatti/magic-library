@@ -35,7 +35,6 @@ def search():
     cmc = None
 
     for value in request.args:
-        print(request.args[value])
         if value[:-1] == "colour":
             colours += request.args[value]
         elif value == "rarity":
@@ -218,7 +217,6 @@ def sendedit():
                 colours += request.form[value]
             elif value == "twofaced":
                 two_faced = request.form["twofaced"]
-                print(two_faced)
             elif value == "power":
                 power = request.form["power"]
                 power = None if power == "" else power
