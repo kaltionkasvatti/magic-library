@@ -23,7 +23,8 @@ def index():
     
 @app.route("/search")
 def search():
-
+    if not session:
+        return redirect("/")
     cardname = None
     rarity =  None
     twofaced = None
@@ -80,12 +81,16 @@ def search():
 
 @app.route("/newcard")
 def newcard():
+    if not session:
+        return redirect("/")
     libs = se.libseek(session["username"])
     
     return render_template("newcard.html", libs=libs )
 
 @app.route("/newcard/send", methods=["POST"])
 def cardsend():
+    if not session:
+        return redirect("/")
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
     cardname = request.form["cardname"]
@@ -147,6 +152,8 @@ def cardsend():
     
 @app.route("/folder", methods=["GET"])
 def folder():
+    if not session:
+        return redirect("/")
     library = request.args["folder"]
     cards = se.cardseek(session["username"], folder=library)
     cmcavg = se.cmcavg(library)
@@ -179,6 +186,8 @@ def del_folder():
 
 @app.route("/cardedit", methods=["GET"])
 def cardedit():
+    if not session:
+        return redirect("/")
     card = request.args["card"]
     sql = "SELECT name, twofaced, colour, cmc, rarity, power, toughness, id FROM cards WHERE id=:card"
     result = db.session.execute(text(sql), {"card":card}).fetchone()
@@ -312,7 +321,7 @@ def delcard():
 def signin():
     password = request.form["password"]
     username = request.form["username"]
-    if 2 < len(username) < 25 and 2 < len(password) < 25:
+    if 2 < len(username) < 25 and 5 < len(password) < 25:
         if len(se.userseek(username)) == 0:
             us.insert_user(username, password)
             return redirect("/")
@@ -321,7 +330,7 @@ def signin():
             return render_template("ohno.html", msg = 3)
         
     else:
-        return render_template("ohno.html", msg=1)
+        return redirect("/")
 
 
 @app.route("/login",methods=["POST"])
@@ -330,7 +339,7 @@ def login():
     password = request.form["password"]
     
     if not us.valid_user(username, password):
-        return render_template("ohno.html", msg=0)
+        return render_template("index.html", failed=1)
     
     session["username"] = username
     session["csrf_token"] = token_hex(16)

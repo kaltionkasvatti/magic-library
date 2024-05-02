@@ -4,18 +4,18 @@
 <title>Etusivu</title>
 
 <div class="container">
-    <nav class="navbar navbar-expand-sm navbar-light">
-        <a class="navbar-brand" href="/">Etusivu</a>
+    <nav class="navbar navbar-expand-sm navbar-light" style="background-color: #5f4f66;">
+        <a class="navbar-brand" href="/" style="color:cornsilk;">Etusivu</a>
         <ul class="navbar-nav">
         {% if session.username %}
             <li class="nav-item">
-                <a class="nav-link" href="/search">Etsi korttia</a>
+                <a class="nav-link" href="/search" style="color:cornsilk;">Etsi korttia</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/newcard">Lisää kortti</a>
+                <a class="nav-link" href="/newcard" style="color:cornsilk;">Lisää kortti</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/logout">Kirjaudu ulos</a>
+                <a class="nav-link" href="/logout" style="color:cornsilk;">Kirjaudu ulos</a>
             </li>
         {% endif %}
         </ul>
@@ -26,18 +26,23 @@
             <h5>Kortit ilman kansiota: {{count}}</h5>
             <hr>
             {% for card in cards[0]%} 
-                {{card[1]}}
-                <form action="/cardedit" method="GET"> 
-                    <input type="hidden" name="card" value="{{card[0]}}"> 
-                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                    <input type="submit" value="Muokkaa"> 
-                </form>
-                <form action="/delcard" method="GET"> 
-                    <input type="hidden" name="card" value="{{card[0]}}"> 
-                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                    <input type="submit" value="Poista"> 
-                </form>
-                <hr>
+                    <ul class="list-group list-group-horizontal">
+                        <li class="list-group-item">
+                            {{card[1]}}
+                        </li>
+                        <li class="list-group-item">
+                            <form action="/cardedit" method="GET"> 
+                                <input type="hidden" name="card" value="{{card[0]}}"> 
+                                <input type="submit" value="Muokkaa"> 
+                            </form>
+                        </li>
+                        <li class="list-group-item">
+                            <form action="/delcard" method="GET"> 
+                                <input type="hidden" name="card" value="{{card[0]}}"> 
+                                <input type="submit" value="Poista" onclick="return usure(event)"> 
+                            </form>
+                        </li>
+                    </ul>
             {% endfor %}
             </div>
             <div class="col-4">
@@ -51,35 +56,93 @@
                 <h5>Kansioita: {{number}}</h5>
                 <hr>
                 {%for folder in folders%}
-                    {{folder[0]}}       
-                    <form action="/folder" method="GET">
-                        <input type="hidden" name="folder" value="{{folder[1]}}">
-                        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                        <input type="submit" value="Katso"> 
-                    </form>
+                <ul class="list-group list-group-horizontal">
+                    <li class="list-group-item">
+                        {{folder[0]}}
+                    </li>
+                    <li class="list-group-item">
+                        <form action="/folder" method="GET">
+                            <input type="hidden" name="folder" value="{{folder[1]}}">
+                            <input type="submit" value="Katso"> 
+                        </form>
+                    </li>
+                </ul>
                 {%endfor%}
             </div>
 
         {% else %}
-            <h3>Kirjaudu:</h3>
-            <form action="/login" method="POST">
-                <p>Tunnus:<br>
-                    <input type="text" name="username"></p>
-                <p>Salasana:<br>
-                <input type="password" name="password"></p>
-                <input type="submit" value="Kirjaudu">
-            </form>
-            <br>
-            <h3>Luo tunnus:</h3>
-            <p>
-                <form action="/signin" method="POST">
-                    <p>Tunnus:<br>
-                    <input type="text" name="username"></p>
-                    <p>Salasana:<br>
-                    <input type="password" name="password"></p>
-                    <input type="submit" value="Luo tunnus">
+            <div class="col-6">
+                <h3>Kirjaudu:</h3>
+                <br>
+                {% if failed and failed == 1 %}
+                    <body onload="failed()"></body>
+                    <script>
+                        
+                    </script>
+                {% endif %}
+                <form action="/login" method="POST">
+                    <div class="form-group col-8">
+                      <label for="inputUsername">Käyttäjätunnus</label>
+                      <input type="text" class="form-control" id="inputUsername" name="username">
+                    </div>
+                    <div class="form-group col-8">
+                      <label for="inputPassword">Salasana</label>
+                      <input type="password" class="form-control" id="inputPassword" name="password">
+                    </div>
+                    <div class="form-group col-8">
+                      <button type="submit" class="btn btn-primary">Kirjaudu</button>
+                    </div>
                 </form>
-            </p>
+            </div>
+            <div class="col-6">
+                <h3>Luo tunnus:</h3>
+                <br>
+                <form action="/signin" method="POST" onsubmit="return check(this)">
+                    <div class="form-group col-8">
+                        <label for="inputUsername">Käyttäjätunnus</label>
+                        <input type="text" class="form-control" id="inputUsername" name="username">
+                    </div>
+                    <div class="form-group col-8">
+                        <label for="inputPassword">Salasana</label>
+                        <input type="password" class="form-control" id="inputPassword" name="password">
+                    </div>
+                    <div class="form-group col-8">
+                        <button type="submit" class="btn btn-primary">Luo tunnukset</button>
+                    </div>
+                </form>
+            </div>
+            <br>
+            
         {% endif %}
     </div>
+    <script>
+        function check(form) {
+            if (form.username.value.length < 2) {
+            alert("Käyttäjätunnus liian lyhyt!");
+            return False;
+            }
+            if (form.username.value.length > 25) {
+                alert("Käyttäjätunnus liian pitkä!");
+                return False;
+            }
+            if (form.password.value.length < 2) {
+                alert("Käyttäjätunnus liian lyhyt!");
+                return False;
+            }
+            if (form.password.value.length > 25) {
+                alert("Käyttäjätunnus liian pitkä!");
+                return False;
+                }
+            return True;
+        }
+        function failed() {
+            alert("Väärä käyttäjätunnus tai salasana!");
+        }
+        function usure(event) {
+            let text = "Oletko varma, että haluat poistaa?";
+            if (confirm(text) == false) {
+                event.preventDefault();
+            }
+        }
+    </script>
 </div>

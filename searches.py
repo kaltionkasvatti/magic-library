@@ -106,4 +106,7 @@ def cmcavg(folder):
             WHERE L.id = :folder
             AND D.visible =  True
             """
-    return round(db.session.execute(text(sql), {"folder":folder}).fetchone()[0], 2)
+    result = db.session.execute(text(sql), {"folder":folder}).fetchone()[0]
+    if result is not None:
+        return round(result, 2)
+    else: return 0
