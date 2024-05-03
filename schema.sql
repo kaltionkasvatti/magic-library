@@ -24,14 +24,13 @@ CREATE TABLE libraries (
 );
 
 CREATE TABLE cardlib (
-    card INTEGER REFERENCES cards,
+    card INTEGER REFERENCES cards ON DELETE CASCADE,
     library INTEGER REFERENCES libraries,
-    visible BOOLEAN
 );
 
 CREATE TABLE backside (
     id SERIAL PRIMARY KEY,
-    frontid INTEGER REFERENCES cards,
+    frontid INTEGER REFERENCES cards ON DELETE CASCADE,
     name TEXT,
     cmc TEXT,
     power TEXT,

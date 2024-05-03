@@ -156,7 +156,8 @@ def folder():
     library = request.args["folder"]
     cards = se.cardseek(session["username"], folder=library)
     cmcavg = se.cmcavg(library)
-    return render_template("folder.html", cards=cards, folder=library, cmcavg=cmcavg)
+    colours = se.colours(library)
+    return render_template("folder.html", cards=cards, number=len(cards[0]), folder=library, cmcavg=cmcavg, colours=colours)
 
 
 @app.route("/folder/new", methods=["POST"])
@@ -312,7 +313,7 @@ def backsend():
 @app.route("/delcard", methods=["GET"])
 def delcard():
     card = request.args["card"]
-    sql = "UPDATE cardlib SET visible = False WHERE card = :card"
+    sql = "DELETE FROM cards WHERE id = :card"
     db.session.execute(text(sql), {"card":card})
     db.session.commit()
     return redirect("/")

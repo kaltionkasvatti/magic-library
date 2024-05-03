@@ -29,7 +29,6 @@ def cardseek(
             WHERE C.id=D.card 
             AND C.userid=U.id
             AND U.username = :user
-            AND D.visible = True
             """
     
     if folder is not None and folder != "None":
@@ -103,9 +102,39 @@ def cmcavg(folder):
                                 JOIN cardlib D ON C.id = D.card
                                 JOIN libraries L ON L.id = D.library
             WHERE L.id = :folder
-            AND D.visible =  True
             """
     result = db.session.execute(text(sql), {"folder":folder}).fetchone()[0]
     if result is not None:
         return round(result, 2)
     else: return 0
+
+def colours(folder):
+    col = []
+    sql = """SELECT COUNT(C.id) FROM cards C JOIN cardlib D ON C.id = D.card
+            WHERE C.colour = 'b' AND D.library = :folder"""
+    col.append(db.session.execute(text(sql), {"folder":folder}).fetchone()[0])
+
+    sql = """SELECT COUNT(C.id) FROM cards C JOIN cardlib D ON C.id = D.card
+            WHERE C.colour = 'u' AND D.library = :folder"""
+    col.append(db.session.execute(text(sql), {"folder":folder}).fetchone()[0])
+
+    sql = """SELECT COUNT(C.id) FROM cards C JOIN cardlib D ON C.id = D.card
+            WHERE C.colour = 'g' AND D.library = :folder"""
+    col.append(db.session.execute(text(sql), {"folder":folder}).fetchone()[0])
+
+    sql = """SELECT COUNT(C.id) FROM cards C JOIN cardlib D ON C.id = D.card
+            WHERE C.colour = 'r' AND D.library = :folder"""
+    col.append(db.session.execute(text(sql), {"folder":folder}).fetchone()[0])
+
+    sql = """SELECT COUNT(C.id) FROM cards C JOIN cardlib D ON C.id = D.card
+            WHERE C.colour = 'w' AND D.library = :folder"""
+    col.append(db.session.execute(text(sql), {"folder":folder}).fetchone()[0])
+
+    sql = """SELECT COUNT(C.id) FROM cards C JOIN cardlib D ON C.id = D.card
+            WHERE LENGTH(C.colour) > 1 AND D.library = :folder"""
+    col.append(db.session.execute(text(sql), {"folder":folder}).fetchone()[0])
+
+    sql = """SELECT COUNT(C.id) FROM cards C JOIN cardlib D ON C.id = D.card
+            WHERE LENGTH(C.colour) = 0 AND D.library = :folder"""
+    col.append(db.session.execute(text(sql), {"folder":folder}).fetchone()[0])
+    return col

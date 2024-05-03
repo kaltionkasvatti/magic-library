@@ -19,6 +19,7 @@
         {% endif %}
         </ul>
     </nav>
+    <br>
     <div class="row">
         <div class="col-8">
             <ul class="list-group list-group-flush">
@@ -49,7 +50,31 @@
         </div>
         <div class="col-4">
             <p>
+                Kortteja: {{number}}
+            </p>
+            <p>
                 Korttien keskimääräinen mana-arvo: {{cmcavg}}
+            </p>
+            <p>
+                Mustia: {{colours[0]}}
+            </p>
+            <p>
+                Sinisiä: {{colours[1]}}
+            </p>
+            <p>
+                Vihreitä: {{colours[2]}}
+            </p>
+            <p>
+                Punaisia: {{colours[3]}}
+            </p>
+            <p>
+                Valkoisia: {{colours[4]}}
+            </p>
+            <p>
+               Monivärisiä: {{colours[5]}} 
+            </p>
+            <p>
+                Värittömiä: {{colours[6]}}
             </p>
             <form action="/folder/delete" method="POST">
                 <input type="hidden" name="id" value="{{folder}}">
