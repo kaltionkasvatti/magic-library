@@ -23,7 +23,7 @@
     <form action="/search" method="GET">
         <div class="mb-3">
             <label for="cardname" class="form-label">Kortin nimi</label>
-            <input name="cardname" class="form-control" rows="1" cols="20"></textarea>
+            <input type="text" name="cardname" id="cardname" class="form-control" rows="1" cols="20"></input>
         </div>
         <div class="mb-3 form-check">
             <input type="checkbox" class="form-check-input" name="twofaced" value="True" {% if twofaced %} checked {% endif%}>
@@ -63,28 +63,28 @@
         <br>
             Mana value (X on 0):    
             <select name="iscmc" class="form-select" aria-label="Default select example">
-                <option value="==" {% if cmc[:2] == '==' %} selected {% endif %}> Tasan
-                <option value="<=" {% if cmc[:2] == '<=' %} selected {% endif %}> Enintään
-                <option value=">=" {% if cmc[:2] == '>=' %} selected {% endif %}> Vähintään
+                <option value="==" {% if not cmc or cmc[:2] == '==' %} selected {% endif %}> Tasan
+                <option value="<=" {% if cmc and cmc[:2] == '<=' %} selected {% endif %}> Enintään
+                <option value=">=" {% if cmc and cmc[:2] == '>=' %} selected {% endif %}> Vähintään
             </select>
-            <input type="number" name="cmc" min="0" max="100">
+            <input type="number" name="cmc" min="0" max="100" {% if cmc %} value="{{cmc[2:]}}" {% endif %}></input>
         <br>
     
         Power (X ja * ovat 0): 
         <select name="ispower" class="form-select" aria-label="Default select example">
-            <option value="==" {% if power[:2] == '==' %} selected {% endif %}> Tasan
-            <option value="<=" {% if power[:2] == '<=' %} selected {% endif %}> Enintään
-            <option value=">=" {% if power[:2] == '>=' %} selected {% endif %}> Vähintään
+            <option value="==" {% if not power or power[:2] == '==' %} selected {% endif %}> Tasan
+            <option value="<=" {% if power and power[:2] == '<=' %} selected {% endif %}> Enintään
+            <option value=">=" {% if power and power[:2] == '>=' %} selected {% endif %}> Vähintään
         </select>
-        <input type="number" name="power" min="0" max="100">
+        <input type="number" name="power" min="0" max="100" {% if power %} value="{{power[2:]}}" {% endif %}></input>
         <br>
         Toughness (X ja * ovat 0): 
         <select name="istoughness" class="form-select" aria-label="Default select example">
-            <option value="==" {% if toughness[:2] == '==' %} selected {% endif %}> Tasan
-            <option value="<=" {% if toughness[:2] == '<=' %} selected {% endif %}> Enintään
-            <option value=">=" {% if toughness[:2] == '>=' %} selected {% endif %}> Vähintään
+            <option value="==" {% if not toughness or toughness[:2] == '==' %} selected {% endif %}> Tasan
+            <option value="<=" {% if toughness and toughness[:2] == '<=' %} selected {% endif %}> Enintään
+            <option value=">=" {% if toughness and toughness[:2] == '>=' %} selected {% endif %}> Vähintään
         </select>
-        <input type="number" name="toughness" min="0" max="100">
+        <input type="number" name="toughness" min="0" max="100" {% if toughness %} value="{{toughness[2:]}}" {% endif %}></input>
         <br>
         Haku kansiosta:
         <select name="inlib" class="form-select" aria-label="Default select example">
@@ -122,15 +122,6 @@
     <script>
         window.onload = function() {
             document.getElementById('cardname').value = "{{cardname}}"
-        };
-        window.onload = function() {
-            document.getElementById('cmc').value = "{{cmc[2:]}}"
-        };
-        window.onload = function() {
-            document.getElementById('cmc').value = "{{power[2:]}}"
-        };
-        window.onload = function() {
-            document.getElementById('cmc').value = "{{toughness[2:]}}"
         };
     </script>
 </div>

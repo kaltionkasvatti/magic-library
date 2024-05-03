@@ -22,7 +22,7 @@
     </nav>
     <form action="/cardedit/send " method="POST" onsubmit="return validate(this)">
         Kortin nimi: <br>
-        <textarea name="cardname" id="cardname" rows="1" cols="50" type="text" value="{{result[0]}}"></textarea>
+        <input name="cardname" id="cardname" rows="1" cols="50" type="text" value="{{result[0]}}"></input>
         <br>    
             <input type="checkbox" name="twofaced" value="True" {%if result[1]%} checked {%endif%}>
             <label for ="twofaced"> Kaksipuolinen</label>
