@@ -14,6 +14,7 @@ hakea kortteja ja lisätä niitä omaan kirjastoonsa.
 - Käyttäjä voi hakea korttia nimellä tai rajatusta valikoimasta ominaisuuksia (toimii)
 - Käyttäjä voi poistaa kortin tietokannastaan, jos se on siellä (toimii)
 - Jokaisen listan kohdalla on valikoidut tiedot listan korttien ominaisuuksista (pelkkä nimi tällä hetkellä)
+- Kansiossa näkyy statistiikkaa sen sisältämistä korteista (toimii)
 
 
 # Paikallinen käyttö
