@@ -21,7 +21,7 @@
         </ul>
     </nav>
 
-    <form action="/newcard/send " method="POST">
+    <form action="/newcard/send " method="POST" onsubmit="return validate(this)">
         Kortin nimi: <br>
         <textarea name="cardname" rows="1" cols="50"></textarea>
         <br>
@@ -65,4 +65,17 @@
         <br>
         <input type="submit" value="Lähetä">
     </form> 
+    <script>
+        function validate(form) {
+            if (form.cardname.value.length < 2) {
+                alert("Lisää kortille nimi, jossa on vähintään 2 kirjainta");
+                event.preventDefault();
+            }
+            else if (form.cmc.value.length < 1) {
+                alert("Lisää kortille Mana value");
+                event.preventDefault();
+            }
+            return true
+        }
+    </script>
 </div>

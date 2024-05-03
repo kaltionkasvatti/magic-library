@@ -48,7 +48,7 @@
             </div>
             <div class="col-4">
                 Luo kansio:
-                <form action="/folder/new" method="POST">
+                <form action="/folder/new" method="POST" onsubmit="return checknewfolder(this)">
                     <input type="text" name="name">
                     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                     <input type="submit" value="Luo kansio">
@@ -120,19 +120,19 @@
         function check(form) {
             if (form.username.value.length < 2) {
             alert("Käyttäjätunnus liian lyhyt!");
-            return False;
+            event.preventDefault();
             }
-            if (form.username.value.length > 25) {
+            else if (form.username.value.length > 25) {
                 alert("Käyttäjätunnus liian pitkä!");
-                return False;
+                event.preventDefault();
             }
-            if (form.password.value.length < 2) {
-                alert("Käyttäjätunnus liian lyhyt!");
-                return False;
+            else if (form.password.value.length < 2) {
+                alert("Salasana liian lyhyt!");
+                event.preventDefault();
             }
-            if (form.password.value.length > 25) {
-                alert("Käyttäjätunnus liian pitkä!");
-                return False;
+            else if (form.password.value.length > 25) {
+                alert("Salasana liian pitkä!");
+                event.preventDefault();
                 }
             return True;
         }
@@ -142,6 +142,12 @@
         function usure(event) {
             let text = "Oletko varma, että haluat poistaa?";
             if (confirm(text) == false) {
+                event.preventDefault();
+            }
+        }
+        function checknewfolder(form) {
+            if (form.name.value.length < 1) {
+                alert("Kansion nimessä on oltava vähintään 1 merkki!");
                 event.preventDefault();
             }
         }

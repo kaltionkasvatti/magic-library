@@ -164,6 +164,8 @@ def new_folder():
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
     name = request.form["name"]
+    if len(name) < 1:
+        return render_template("ohno.html", msg = 4)
     sql = """INSERT INTO libraries (userid, name) VALUES (:user, :name)"""
     db.session.execute(text(sql), {"name":name, "user":se.userseek(session["username"])})
     db.session.commit()

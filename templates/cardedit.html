@@ -20,12 +20,9 @@
         {% endif %}
         </ul>
     </nav>
-    <form action="/cardedit/send " method="POST">
+    <form action="/cardedit/send " method="POST" onsubmit="return validate(this)">
         Kortin nimi: <br>
         <textarea name="cardname" id="cardname" rows="1" cols="50" type="text" value="{{result[0]}}"></textarea>
-        <script>window.onload = function() {
-            document.getElementById('cardname').value = "{{result[0]}}"
-        };</script>
         <br>    
             <input type="checkbox" name="twofaced" value="True" {%if result[1]%} checked {%endif%}>
             <label for ="twofaced"> Kaksipuolinen</label>
@@ -67,4 +64,21 @@
         <br>
         <input type="submit" value="Lähetä">
     </form> 
+    <script>
+        window.onload = function() {
+            document.getElementById('cardname').value = "{{result[0]}}"
+        };
+
+        function validate(form) {
+            if (form.cardname.value.length < 2) {
+                alert("Lisää kortille nimi, jossa on vähintään 2 kirjainta");
+                event.preventDefault();
+            }
+            else if (form.cmc.value.length < 1) {
+                alert("Lisää kortille Mana value");
+                event.preventDefault();
+            }
+            return true
+        }
+    </script>
 </div>
