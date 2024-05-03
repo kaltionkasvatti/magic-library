@@ -13,6 +13,8 @@ def cardseek(
             power = None, #str
             toughness = None #str
             ):
+    if colours == "":
+        colours = None
 
     variables = {}
     variables["user"] = user

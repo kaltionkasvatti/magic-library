@@ -58,8 +58,6 @@ def search():
         elif value == "inlib":
             inlib = request.args[value]
     
-    if colours == "":
-        colours = None
 
     libs = [("None", 0)]
     cards = se.cardseek(session["username"], 
@@ -76,7 +74,17 @@ def search():
     for library in se.libseek(session["username"]):
         libs.append(library)
     
-    return render_template("search.html", cards=cards, libs=libs)
+    return render_template("search.html",
+                           cards=cards,
+                           libs=libs,
+                           cardname=cardname,
+                           twofaced=twofaced,
+                           colours=colours,
+                           rarity=rarity,
+                           cmc=cmc,
+                           power=power,
+                           toughness=toughness,
+                           inlib=inlib)
 
 @app.route("/newcard")
 def newcard():

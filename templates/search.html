@@ -26,71 +26,71 @@
             <input name="cardname" class="form-control" rows="1" cols="20"></textarea>
         </div>
         <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" name="twofaced" value="True">
+            <input type="checkbox" class="form-check-input" name="twofaced" value="True" {% if twofaced %} checked {% endif%}>
             <label class="form-check-label" for ="twofaced"> Kaksipuolinen</label>
         </div>
         <b>Värit:</b>
         <br>
         <div class="mb-3 form-check form-check-inline">
-            <input type="checkbox" class="form-check-input" name="colour1" value="b">
+            <input type="checkbox" class="form-check-input" name="colour1" value="b" {% if colours and  'b' in colours %} checked {% endif%}>
             <label class="form-check-label" for="colour1"> Musta</label>
         </div>
         <div class="mb-3 form-check form-check-inline">
-            <input type="checkbox" class="form-check-input" name="colour2" value="u">
+            <input type="checkbox" class="form-check-input" name="colour2" value="u" {% if colours and  'u' in colours %} checked {% endif%}>
             <label class="form-check-label" for="colour2"> Sininen</label>
         </div>
         <div class="mb-3 form-check form-check-inline">
-            <input type="checkbox" class="form-check-input" name="colour3" value="g">
+            <input type="checkbox" class="form-check-input" name="colour3" value="g" {% if colours and  'g' in colours %} checked {% endif%}>
             <label class="form-check-label" for="colour3"> Vihreä</label>
         </div>
         <div class="mb-3 form-check form-check-inline">
-            <input type="checkbox" class="form-check-input" name="colour4" value="r">
+            <input type="checkbox" class="form-check-input" name="colour4" value="r" {% if colours and  'r' in colours %} checked {% endif%}>
             <label class="form-check-label" for="colour4"> Punainen</label>
         </div>
         <div class="mb-3 form-check form-check-inline">
-            <input type="checkbox" class="form-check-input" name="colour5" value="w">
+            <input type="checkbox" class="form-check-input" name="colour5" value="w" {% if colours and  'w' in colours %} checked {% endif%}>
             <label class="form-check-label" for="colour5"> Valkoinen</label>
         </div>
         <br>
         Harvinaisuus:
             <select name="rarity" class="form-select" aria-label="Default select example">
-                <option value="None" selected> None
-                <option value="common" > Common
-                <option value="uncommon" > Uncommon
-                <option value="rare" > Rare
-                <option value="mythic" > Mythic Rare
+                <option value="None" {%if not rarity %} selected {% endif %}> None
+                <option value="common" {%if rarity == 'common' %} selected {% endif %}> Common
+                <option value="uncommon" {%if rarity == 'uncommon' %} selected {% endif %}> Uncommon
+                <option value="rare" {%if rarity == 'rare' %} selected {% endif %}> Rare
+                <option value="mythic" {%if rarity == 'mythic' %} selected {% endif %}> Mythic Rare
             </select>
         <br>
             Mana value (X on 0):    
             <select name="iscmc" class="form-select" aria-label="Default select example">
-                <option value="==" selected> Tasan
-                <option value="<="> Enintään
-                <option value=">="> Vähintään
+                <option value="==" {% if cmc[:2] == '==' %} selected {% endif %}> Tasan
+                <option value="<=" {% if cmc[:2] == '<=' %} selected {% endif %}> Enintään
+                <option value=">=" {% if cmc[:2] == '>=' %} selected {% endif %}> Vähintään
             </select>
             <input type="number" name="cmc" min="0" max="100">
         <br>
     
         Power (X ja * ovat 0): 
         <select name="ispower" class="form-select" aria-label="Default select example">
-            <option value="==" selected> Tasan
-            <option value="<="> Enintään
-            <option value=">="> Vähintään
+            <option value="==" {% if power[:2] == '==' %} selected {% endif %}> Tasan
+            <option value="<=" {% if power[:2] == '<=' %} selected {% endif %}> Enintään
+            <option value=">=" {% if power[:2] == '>=' %} selected {% endif %}> Vähintään
         </select>
         <input type="number" name="power" min="0" max="100">
         <br>
         Toughness (X ja * ovat 0): 
         <select name="istoughness" class="form-select" aria-label="Default select example">
-            <option value="==" selected> Tasan
-            <option value="<="> Enintään
-            <option value=">="> Vähintään
+            <option value="==" {% if toughness[:2] == '==' %} selected {% endif %}> Tasan
+            <option value="<=" {% if toughness[:2] == '<=' %} selected {% endif %}> Enintään
+            <option value=">=" {% if toughness[:2] == '>=' %} selected {% endif %}> Vähintään
         </select>
         <input type="number" name="toughness" min="0" max="100">
         <br>
         Haku kansiosta:
         <select name="inlib" class="form-select" aria-label="Default select example">
-            <option value="None"> All
+            <option value="None" {% if inlib == 'None' %} selected {% endif %}> All
             {%for folder in libs%}
-                <option value="{{folder[1]}}">{{folder[0]}}
+                <option value="{{folder[1]}}" {% if inlib == folder[1] %} selected {% endif %}>{{folder[0]}}
             {%endfor%}
         </select>
         <input type="hidden" name="libs" value="{{libs}}">
@@ -119,4 +119,18 @@
                 </li>
             </ul>
         {% endfor %}
+    <script>
+        window.onload = function() {
+            document.getElementById('cardname').value = "{{cardname}}"
+        };
+        window.onload = function() {
+            document.getElementById('cmc').value = "{{cmc[2:]}}"
+        };
+        window.onload = function() {
+            document.getElementById('cmc').value = "{{power[2:]}}"
+        };
+        window.onload = function() {
+            document.getElementById('cmc').value = "{{toughness[2:]}}"
+        };
+    </script>
 </div>
